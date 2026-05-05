@@ -15,6 +15,7 @@
     "axios": "^1.16.0",
     "cors": "^2.8.6",
     "express": "^5.2.1",
+    "express-fileupload": "^1.5.2",
     "form-data": "^4.0.5",
     "multer": "^2.1.1"
   }
