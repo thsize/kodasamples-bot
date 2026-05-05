@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Unyv Records - Envio de Packs</title>
+    <style>
+        body { font-family: sans-serif; background: #0a0a0a; color: white; text-align: center; padding: 40px; }
+        .box { background: #111; padding: 30px; border-radius: 15px; max-width: 500px; margin: auto; border: 1px solid #00ff7f; }
+        h1 { color: #00ff7f; }
+        input { margin: 20px 0; display: block; width: 100%; }
+        button { background: #00ff7f; color: black; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        #progresso { width: 100%; background: #333; height: 20px; border-radius: 10px; margin-top: 20px; display: none; }
+        #barra { width: 0%; height: 100%; background: #00ff7f; border-radius: 10px; transition: 0.3s; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>Unyv Records</h1>
+        <p>Arraste seu Pack (.zip, .wav, .rar) abaixo:</p>
+        <input type="file" id="arquivo">
+        <button onclick="enviar()">ENVIAR PACK</button>
+        <div id="progresso"><div id="barra"></div></div>
+        <p id="msg"></p>
+    </div>
+
+    <script>
+        function enviar() {
+            const file = document.getElementById('arquivo').files[0];
+            if (!file) return alert("Selecione um arquivo!");
+
+            const fd = new FormData();
+            fd.append('file', file);
+
+            const ajax = new XMLHttpRequest();
+            document.getElementById('progresso').style.display = 'block';
+
+            ajax.upload.onprogress = (e) => {
+                const perc = Math.round((e.loaded / e.total) * 100);
+                document.getElementById('barra').style.width = perc + '%';
+                document.getElementById('msg').innerText = "Subindo: " + perc + "%";
+            };
+
+            ajax.onload = () => {
+                document.getElementById('msg').innerText = ajax.status === 200 ? "✅ Enviado com sucesso!" : "❌ Erro no envio.";
+            };
+
+            ajax.open("POST", "/upload");
+            ajax.send(fd);
+        }
+    </script>
+</body>
+</html>
+
