@@ -1,58 +1,72 @@
 const express = require('express');
-const multer = require('multer');
+const fileUpload = require('express-fileupload');
 const axios = require('axios');
 const FormData = require('form-data');
-const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
-const upload = multer({ storage: multer.memoryStorage() });
-
-// Configurações
-app.use(cors());
-app.use(express.json());
-
-const token = process.env.BOT_TOKEN;
-const chatId = process.env.CHAT_ID;
-
-app.get('/', (req, res) => res.send('Servidor KodaSamples ON! 🚀'));
-
-// Rota de UPLOAD
-app.post('/upload', upload.single('file'), async (req, res) => {
-    if (!req.file) return res.status(400).send('Arquivo não enviado.');
-
-    const formData = new FormData();
-    formData.append('chat_id', chatId);
-    formData.append('document', req.file.buffer, {
-        filename: req.file.originalname,
-        contentType: req.file.mimetype
-    });
-
-    try {
-        const response = await axios.post(`https://api.telegram.org/bot${token}/sendDocument`, formData, {
-            headers: formData.getHeaders(),
-            maxContentLength: Infinity,
-            maxBodyLength: Infinity
-        });
-        res.json(response.data);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ erro: 'Erro ao mandar pro Telegram' });
-    }
-});
-
-// Rota de DOWNLOAD
-app.get('/download', async (req, res) => {
-    const fileId = req.query.id;
-    if (!fileId) return res.status(400).send('ID faltando');
-    try {
-        const response = await axios.get(`https://api.telegram.org/bot${token}/getFile?file_id=${fileId}`);
-        const filePath = response.data.result.file_path;
-        res.redirect(`https://api.telegram.org/file/bot${token}/${filePath}`);
-    } catch (error) {
-        res.status(500).send('Erro no download');
-    }
-});
-
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`Rodando na porta ${PORT}`));
+
+// 1. Configurações de Limite e Temporários
+app.use(fileUpload({
+    useTempFiles: true,
+    tempFileDir: '/tmp/', // O Railway limpa essa pasta automaticamente
+    limits: { fileSize: 4 * 1024 * 1024 * 1024 }, // Limite de 4GB
+    abortOnLimit: true
+}));
+
+app.use(express.static('public'));
+
+// 2. Rota de Upload
+app.post('/upload', async (req, res) => {
+    try {
+        if (!req.files || !req.files.file) {
+            return res.status(400).send('Nenhum arquivo enviado.');
+        }
+
+        const arquivo = req.files.file;
+        const BOT_TOKEN = process.env.BOT_TOKEN;
+        const CHAT_ID = process.env.CHAT_ID;
+
+        console.log(`Iniciando envio: ${arquivo.name} (${(arquivo.size / 1024 / 1024).toFixed(2)} MB)`);
+
+        // 3. Criando o formulário de envio usando Stream (Essencial para 4GB)
+        const form = new FormData();
+        form.append('document', fs.createReadStream(arquivo.tempFilePath), {
+            filename: arquivo.name,
+            knownLength: arquivo.size
+        });
+
+        // 4. Enviando para o Telegram com timeout infinito
+        const response = await axios.post(
+            `https://api.telegram.org/bot${BOT_TOKEN}/sendDocument?chat_id=${CHAT_ID}`,
+            form,
+            {
+                headers: form.getHeaders(),
+                maxContentLength: Infinity,
+                maxBodyLength: Infinity,
+                timeout: 0 // Sem limite de tempo no servidor para arquivos gigantes
+            }
+        );
+
+        // 5. Retorna o sucesso para o seu site
+        res.json({
+            success: true,
+            file_id: response.data.result.document.file_id
+        });
+
+    } catch (error) {
+        console.error('Erro no upload:', error.message);
+        res.status(500).json({ error: 'Erro ao processar arquivo pesado.' });
+    }
+});
+
+// 6. Ajuste de Timeout do Servidor Node
+const server = app.listen(PORT, () => {
+    console.log(`Servidor Unyv Records rodando na porta ${PORT}`);
+});
+
+// Define o tempo de espera da conexão para 2 horas (em milissegundos)
+server.timeout = 7200000;
 
