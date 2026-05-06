@@ -1,25 +1,23 @@
-# 1. Usa a imagem oficial do Telegram Bot API como base
+# Usa a base oficial do Telegram Bot API
 FROM aiogram/telegram-bot-api:latest
 
-# 2. Instala o Node.js e o NPM usando a flag CORRETA (--no-cache)
+# Instala Node e NPM com a flag correta para Alpine
 RUN apk add --no-cache nodejs npm
 
-# 3. Define a pasta onde os arquivos do seu bot vão morar
+# Pasta do projeto
 WORKDIR /app
 
-# 4. Copia os arquivos de configuração primeiro
+# Instala as dependências primeiro
 COPY package*.json ./
-
-# 5. Instala as bibliotecas (express, axios, etc.)
 RUN npm install
 
-# 6. Copia o restante dos arquivos (server.js, index.html, etc.)
+# Copia o restante dos arquivos (server.js, index.html)
 COPY . .
 
-# 7. Libera as portas para o site (8080) e para o Telegram (8081)
+# Portas da Unyv Records
 EXPOSE 8080
 EXPOSE 8081
 
-# 8. Liga o Servidor Local do Telegram e o seu código Node ao mesmo tempo
+# Inicia o Servidor Local do Telegram + Seu Código Node
 CMD ["sh", "-c", "telegram-bot-api --local --api-id=${TELEGRAM_API_ID} --api-hash=${TELEGRAM_API_HASH} --http-port=8081 & node server.js"]
 
