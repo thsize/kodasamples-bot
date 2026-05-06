@@ -1,23 +1,23 @@
-# Usa a imagem do Telegram Bot API
+# Usa a imagem oficial do Telegram Bot API
 FROM aiogram/telegram-bot-api:latest
 
-# Corrigido: Instalando nodejs e npm sem o erro do no-update
+# Instala Node.js e npm (necessários para rodar seu server.js)
 RUN apk add --no-cache nodejs npm
 
-# Define a pasta do app
+# Define a pasta de trabalho
 WORKDIR /app
 
-# Copia e instala as dependências
+# Copia dependências primeiro para ganhar velocidade no build
 COPY package*.json ./
 RUN npm install
 
-# Copia o resto dos arquivos
+# Copia o restante dos arquivos do seu projeto
 COPY . .
 
-# Portas do site (8080) e do Telegram Local (8081)
+# Expõe as portas: 8080 (API/Site) e 8081 (Telegram Local)
 EXPOSE 8080
 EXPOSE 8081
 
-# Comando de inicialização
+# Comando que liga o Telegram Local e o seu Servidor Node ao mesmo tempo
 CMD ["sh", "-c", "telegram-bot-api --local --api-id=${TELEGRAM_API_ID} --api-hash=${TELEGRAM_API_HASH} --http-port=8081 & node server.js"]
 
