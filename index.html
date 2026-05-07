@@ -209,22 +209,6 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
-        /* --- DESTAQUES CARROSSEL --- */
-        #highlightsTrack {
-            display: flex;
-            overflow-x: auto;
-            gap: 16px;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 10px;
-        }
-        #highlightsTrack::-webkit-scrollbar { display: none; }
-        .highlight-item {
-            min-width: 85vw; 
-            scroll-snap-align: center;
-            flex-shrink: 0;
-        }
-
         /* --- PAINEL DE UPLOAD (MODAL) --- */
         #uploadModal {
             position: fixed;
@@ -346,6 +330,14 @@
             font-size: 11px;
             z-index: 4000;
             display: none;
+            animation: fadeInOut 2s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -10px); }
+            15% { opacity: 1; transform: translate(-50%, 0); }
+            85% { opacity: 1; transform: translate(-50%, 0); }
+            100% { opacity: 0; transform: translate(-50%, -10px); }
         }
 
         ::-webkit-scrollbar { width: 0px; }
@@ -389,16 +381,27 @@
             <div class="marquee-content">
                 KodaSamples a casa dos produtores — Feito por thsize, parcerias Lopezs, se7e records — 
                 KodaSamples a casa dos produtores — Feito por thsize, parcerias Lopezs, se7e records — 
+                KodaSamples a casa dos produtores — Feito por thsize, parcerias Lopezs, se7e records — 
+                KodaSamples a casa dos produtores — Feito por thsize, parcerias Lopezs, se7e records — 
             </div>
         </div>
 
         <section class="px-8 mb-10">
-            <div id="highlightsTrack">
+            <div class="relative w-full h-40 rounded-[32px] overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-700 to-pink-600 border border-white/20 flex items-center p-8 shadow-2xl shadow-purple-500/20">
+                <div class="relative z-10">
+                    <span class="text-[9px] font-black bg-white text-black px-2 py-1 rounded mb-3 inline-block tracking-widest shadow-lg">DESTAQUE</span>
+                    <h3 class="text-xl font-black italic tracking-tighter uppercase text-white drop-shadow-md" style="font-family: 'Syncopate';">LO-FI SOUL<br>PACK</h3>
                 </div>
+                <div class="absolute right-[-20px] top-[-20px] opacity-20">
+                    <i class="fas fa-compact-disc text-[180px] animate-spin text-white" style="animation-duration: 15s;"></i>
+                </div>
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_black_140%)] opacity-30"></div>
+            </div>
         </section>
 
         <section class="px-8 pb-10">
-            <div id="kitsGrid" class="grid grid-cols-2 gap-4"></div>
+            <div id="kitsGrid" class="grid grid-cols-2 gap-4">
+                </div>
         </section>
     </main>
 
@@ -417,17 +420,29 @@
         </section>
 
         <section class="px-8 space-y-4">
-            <div class="bg-zinc-900/30 rounded-[32px] border border-white/5 p-6 flex items-center gap-4" onclick="window.open('https://instagram.com/kodasamples', '_blank')">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 flex items-center justify-center">
+            <div class="bg-zinc-900/30 rounded-[32px] border border-white/5 p-6 flex items-center gap-4 active:scale-95 transition-transform" onclick="window.open('https://instagram.com/kodasamples', '_blank')">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 flex items-center justify-center shadow-lg shadow-pink-500/10">
                     <i class="fab fa-instagram text-2xl text-white"></i>
                 </div>
                 <div>
                     <h4 class="text-[11px] font-black uppercase tracking-wider">Instagram Oficial</h4>
-                    <p class="text-[10px] text-white/50 font-bold">@kodasamples</p>
+                    <p class="text-[10px] text-white/50 font-bold tracking-widest">@kodasamples</p>
                 </div>
+                <i class="fas fa-external-link-alt ml-auto text-white/20 text-xs"></i>
             </div>
 
-            <button onclick="location.reload()" class="w-full bg-red-500/10 text-red-500 py-5 rounded-[24px] font-black text-[10px] uppercase tracking-[0.2em] border border-red-500/20 mt-8">
+            <div class="bg-zinc-900/30 rounded-[32px] border border-white/5 p-6 flex items-center gap-4 active:scale-95 transition-transform cursor-pointer" onclick="shareSite()">
+                <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center">
+                    <i class="fas fa-share-nodes text-xl text-blue-500"></i>
+                </div>
+                <div>
+                    <h4 class="text-[11px] font-black uppercase tracking-wider text-blue-400">Compartilhar Site</h4>
+                    <p class="text-[9px] text-white/30 font-bold uppercase">Espalha a palavra</p>
+                </div>
+                <i class="fas fa-copy ml-auto text-white/20 text-xs"></i>
+            </div>
+
+            <button onclick="location.reload()" class="w-full bg-red-500/10 text-red-500 py-5 rounded-[24px] font-black text-[10px] uppercase tracking-[0.2em] border border-red-500/20 active:scale-95 transition-all mt-8">
                 Sair do Estúdio
             </button>
         </section>
@@ -435,101 +450,173 @@
 
     <div id="uploadModal" onclick="this.classList.remove('active')">
         <div class="panel-content" onclick="event.stopPropagation()">
-            <h3 class="text-lg font-black italic mb-6" style="font-family: 'Syncopate';">UPAR PACK</h3>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-black italic" style="font-family: 'Syncopate';">UPAR PACK</h3>
+                <button onclick="document.getElementById('uploadModal').classList.remove('active')" class="text-white/30"><i class="fas fa-times text-xl"></i></button>
+            </div>
+
             <input type="text" id="upName" class="panel-input" placeholder="NOME DO PACK">
-            <input type="text" id="upDesc" class="panel-input" placeholder="DESCRIÇÃO">
+            <input type="text" id="upDesc" class="panel-input" placeholder="DESCRIÇÃO (EX: 20 LOOPS)">
             <input type="text" id="upLink" class="panel-input" placeholder="LINK DE DOWNLOAD">
+
             <div class="upload-btn-box">
                 <div class="select-btn" onclick="document.getElementById('imgInput').click()">
                     <img id="pImg" class="preview-img">
-                    <i class="fas fa-camera" id="camIcon"></i> CAPA
+                    <i class="fas fa-camera" id="camIcon"></i>
+                    CAPA
                     <input type="file" id="imgInput" class="hidden" accept="image/*">
                 </div>
+                <div class="select-btn" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-folder-open" id="fileIcon"></i>
+                    <span id="fileLabel">ARQUIVO</span>
+                    <input type="file" id="fileInput" class="hidden">
+                </div>
             </div>
-            <button onclick="startUpload()" class="w-full bg-white text-black py-5 rounded-2xl font-black text-xs uppercase">Publicar no Site</button>
+
+            <button onclick="startUpload()" class="w-full bg-white text-black py-5 rounded-2xl font-black text-xs uppercase tracking-widest active:scale-95 transition-transform">
+                Publicar no Site
+            </button>
         </div>
     </div>
 
     <nav class="fixed bottom-8 left-0 right-0 flex justify-center px-6 z-50">
         <div class="nav-container flex items-center justify-between">
             <button onclick="switchPage('home')" id="navHome" class="nav-btn active w-12 h-12 flex items-center justify-center text-xl"><i class="fas fa-home"></i></button>
-            <button onclick="document.getElementById('uploadModal').classList.add('active')" class="w-14 h-14 bg-white text-black rounded-full flex items-center justify-center text-xl shadow-2xl"><i class="fas fa-plus"></i></button>
+            <button onclick="document.getElementById('uploadModal').classList.add('active')" class="w-14 h-14 bg-white text-black rounded-full flex items-center justify-center text-xl shadow-2xl active:scale-90 transition-transform">
+                <i class="fas fa-plus"></i>
+            </button>
             <button onclick="switchPage('profile')" id="navProfile" class="nav-btn w-12 h-12 flex items-center justify-center text-xl"><i class="fas fa-user"></i></button>
         </div>
     </nav>
 
     <script>
+        let currentImgBase64 = null;
+
+        // BUSCA PACKS DO SERVIDOR AO ABRIR O SITE
         async function fetchPacks() {
             try {
                 const res = await fetch('/packs');
                 const packs = await res.json();
                 const grid = document.getElementById('kitsGrid');
-                const track = document.getElementById('highlightsTrack');
-                
                 grid.innerHTML = ''; 
-                track.innerHTML = '';
-
-                // Preenche os Destaques (5 mais recentes)
-                const highlights = packs.slice(0, 5);
-                highlights.forEach(p => {
-                    const hCard = document.createElement('div');
-                    hCard.className = 'highlight-item';
-                    hCard.innerHTML = `
-                        <div onclick="window.open('${p.link}', '_blank')" class="relative w-full h-40 rounded-[32px] overflow-hidden bg-zinc-900 border border-white/20 flex items-center p-8 shadow-2xl">
-                            <img src="${p.image}" class="absolute inset-0 w-full h-full object-cover opacity-30">
-                            <div class="relative z-10">
-                                <span class="text-[9px] font-black bg-white text-black px-2 py-1 rounded mb-3 inline-block tracking-widest uppercase">NOVIDADE</span>
-                                <h3 class="text-xl font-black italic tracking-tighter uppercase text-white drop-shadow-md" style="font-family: 'Syncopate';">${p.title}</h3>
-                            </div>
-                            <div class="absolute right-[-20px] top-[-20px] opacity-10">
-                                <i class="fas fa-compact-disc text-[180px] animate-spin text-white"></i>
-                            </div>
-                        </div>
-                    `;
-                    track.appendChild(hCard);
-                });
-
-                // Preenche a Grade normal
                 packs.forEach(p => addCardToSite(p.title, p.description, p.link, p.image));
             } catch (e) { console.log("Erro ao carregar packs"); }
         }
 
         function enterApp() {
             const name = document.getElementById('artistNameInput').value;
-            if(name) document.getElementById('displayArtistName').innerText = name;
+            if(name) {
+                document.getElementById('displayArtistName').innerText = name;
+            }
             document.getElementById('splashScreen').classList.add('hide');
             document.body.style.overflow = 'auto';
-            fetchPacks();
+            document.getElementById('mascotVideo').play();
+            fetchPacks(); // Carrega os packs reais
         }
 
         function switchPage(page) {
-            document.getElementById('homePage').classList.toggle('active', page === 'home');
-            document.getElementById('profilePage').classList.toggle('active', page === 'profile');
-            document.getElementById('navHome').classList.toggle('active', page === 'home');
-            document.getElementById('navProfile').classList.toggle('active', page === 'profile');
+            const home = document.getElementById('homePage');
+            const profile = document.getElementById('profilePage');
+            const btnHome = document.getElementById('navHome');
+            const btnProfile = document.getElementById('navProfile');
+
+            if(page === 'home') {
+                home.classList.add('active');
+                profile.classList.remove('active');
+                btnHome.classList.add('active');
+                btnProfile.classList.remove('active');
+            } else {
+                home.classList.remove('active');
+                profile.classList.add('active');
+                btnHome.classList.remove('active');
+                btnProfile.classList.add('active');
+            }
+            window.scrollTo(0,0);
         }
 
+        function shareSite() {
+            const siteUrl = window.location.href;
+            const message = "🔥 Visite o nosso site de packs e samples exclusivos! Qualidade KodaSamples: " + siteUrl;
+            const textArea = document.createElement("textarea");
+            textArea.value = message;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                const toast = document.getElementById('copyToast');
+                toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none'; }, 2000);
+            } catch (err) {}
+            document.body.removeChild(textArea);
+        }
+
+        document.getElementById('imgInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    currentImgBase64 = event.target.result;
+                    const pImg = document.getElementById('pImg');
+                    pImg.src = currentImgBase64;
+                    pImg.style.display = 'block';
+                    document.getElementById('camIcon').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            if(e.target.files[0]) {
+                document.getElementById('fileLabel').innerText = e.target.files[0].name.substring(0, 10) + "...";
+                document.getElementById('fileIcon').classList.replace('fa-folder-open', 'fa-check-circle');
+                document.getElementById('fileIcon').classList.add('text-green-500');
+            }
+        });
+
+        // UPLOAD CONECTADO AO RENDER
         async function startUpload() {
-            const fd = new FormData();
-            fd.append('description', document.getElementById('upName').value);
-            fd.append('shortDesc', document.getElementById('upDesc').value);
-            fd.append('link', document.getElementById('upLink').value);
-            if(document.getElementById('imgInput').files[0]) fd.append('photo', document.getElementById('imgInput').files[0]);
+            const name = document.getElementById('upName').value;
+            const desc = document.getElementById('upDesc').value;
+            const link = document.getElementById('upLink').value;
+            const imgInput = document.getElementById('imgInput');
+            const fileInput = document.getElementById('fileInput');
+
+            if(!name || !link) {
+                alert("Preencha o nome e o link!");
+                return;
+            }
 
             const status = document.getElementById('uploadStatus');
+            const progVal = document.getElementById('progVal');
             status.style.display = 'block';
             document.getElementById('uploadModal').classList.remove('active');
+
+            const fd = new FormData();
+            fd.append('description', name);
+            fd.append('shortDesc', desc);
+            fd.append('link', link);
+            if(imgInput.files[0]) fd.append('photo', imgInput.files[0]);
+            if(fileInput.files[0]) fd.append('file', fileInput.files[0]);
 
             try {
                 const res = await fetch('/upload', { method: 'POST', body: fd });
                 if(res.ok) {
-                    setTimeout(() => {
-                        status.style.display = 'none';
-                        fetchPacks();
-                        limparCampos();
-                    }, 2000);
+                    let p = 0;
+                    const timer = setInterval(() => {
+                        p += 10;
+                        progVal.innerText = p + "%";
+                        if(p >= 100) {
+                            clearInterval(timer);
+                            status.style.display = 'none';
+                            fetchPacks(); // Recarrega a lista
+                            limparCampos();
+                        }
+                    }, 50);
                 }
-            } catch (e) { status.style.display = 'none'; }
+            } catch (e) {
+                alert("Erro ao subir");
+                status.style.display = 'none';
+            }
         }
 
         function limparCampos() {
@@ -538,35 +625,36 @@
             document.getElementById('upLink').value = "";
             document.getElementById('pImg').style.display = 'none';
             document.getElementById('camIcon').style.display = 'block';
+            document.getElementById('fileLabel').innerText = "ARQUIVO";
+            document.getElementById('fileIcon').classList.replace('fa-check-circle', 'fa-folder-open');
+            document.getElementById('fileIcon').classList.remove('text-green-500');
+            currentImgBase64 = null;
         }
 
         function addCardToSite(name, desc, link, img) {
             const grid = document.getElementById('kitsGrid');
             const card = document.createElement('div');
             card.className = 'kit-card';
-            const thumb = img ? `<img src="${img}">` : `<i class="fas fa-compact-disc text-white/20 text-4xl"></i>`;
+            const colors = ['text-purple-500', 'text-blue-500', 'text-pink-500', 'text-indigo-500'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            const thumb = img ? `<img src="${img}">` : `<i class="fas fa-compact-disc ${randomColor}/40 text-4xl"></i>`;
+            
             card.innerHTML = `
                 <div class="kit-thumb" onclick="window.open('${link}', '_blank')">
                     ${thumb}
                     <div class="download-badge"><i class="fas fa-arrow-down text-[12px]"></i></div>
                 </div>
                 <h5 class="text-[10px] font-black tracking-wider uppercase truncate">${name}</h5>
-                <p class="text-[9px] text-white/30 font-bold uppercase mt-1">${desc || 'PREMIUM'}</p>
+                <p class="text-[9px] text-white/30 font-bold uppercase mt-1">${desc || 'NOVO PACK'}</p>
             `;
-            grid.appendChild(card);
+            grid.prepend(card);
         }
 
-        document.getElementById('imgInput').addEventListener('change', function(e) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                const pImg = document.getElementById('pImg');
-                pImg.src = ev.target.result;
-                pImg.style.display = 'block';
-                document.getElementById('camIcon').style.display = 'none';
-            };
-            reader.readAsDataURL(e.target.files[0]);
-        });
+        window.onload = () => {
+            document.getElementById('mascotVideo').play().catch(() => {});
+        };
     </script>
 </body>
 </html>
+
 
