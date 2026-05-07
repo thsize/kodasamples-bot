@@ -3,68 +3,75 @@ const multer = require('multer');
 const axios = require('axios');
 const FormData = require('form-data');
 const cors = require('cors');
+const Datastore = require('nedb'); // Banco de dados leve
 
 const app = express();
+const db = new Datastore({ filename: 'packs.db', autoload: true }); // Cria o arquivo de banco
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static('.'));
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-let listaDePacks = [];
+const TOKEN = process.env.BOT_TOKEN;
+const CHAT_ID = process.env.CHAT_ID;
 
-app.get('/packs', (req, res) => res.json(listaDePacks));
+// ROTA PARA O SITE BUSCAR OS PACKS SALVOS
+app.get('/packs', (req, res) => {
+    db.find({}).sort({ timestamp: -1 }).exec((err, docs) => {
+        if (err) return res.status(500).send(err);
+        res.json(docs);
+    });
+});
 
-app.post('/upload', upload.fields([{ name: 'file' }, { name: 'photo' }]), async (req, res) => {
+// ROTA DE UPLOAD
+app.post('/upload', upload.fields([{ name: 'photo' }, { name: 'file' }]), async (req, res) => {
     try {
-        const { description, link, shortDesc } = req.body;
-        const chat_id = process.env.CHAT_ID;
-        const token = process.env.BOT_TOKEN;
+        const { description, shortDesc, link } = req.body;
+        let telegramPhotoUrl = "";
 
-        let photoBase64 = null;
-        if (req.files['photo']) {
-            photoBase64 = `data:${req.files['photo'][0].mimetype};base64,${req.files['photo'][0].buffer.toString('base64')}`;
+        // 1. Enviar Foto para o Telegram para pegar o link permanente
+        if (req.files['photo'] && TOKEN) {
+            const photoForm = new FormData();
+            photoForm.append('chat_id', CHAT_ID);
+            photoForm.append('photo', req.files['photo'][0].buffer, { filename: 'capa.jpg' });
+            photoForm.append('caption', `🔥 *KODASAMPLES:* ${description}\n🔗 ${link}`);
+            photoForm.append('parse_mode', 'Markdown');
+
+            const telRes = await axios.post(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, photoForm, {
+                headers: photoForm.getHeaders()
+            });
+
+            // Pega o ID da foto de maior resolução enviada
+            const photos = telRes.data.result.photo;
+            const fileId = photos[photos.length - 1].file_id;
+            
+            // Pega o caminho real da foto nos servidores do Telegram
+            const fileInfo = await axios.get(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
+            telegramPhotoUrl = `https://api.telegram.org/file/bot${TOKEN}/${fileInfo.data.result.file_path}`;
         }
 
+        // 2. Salvar no Banco de Dados interno (NeDB)
         const novoPack = {
-            id: Date.now(),
             title: description,
             description: shortDesc || "Premium Pack",
-            link: link || "#",
-            image: photoBase64,
-            type: req.files['file'] ? "ARQUIVO" : "LINK"
+            link: link,
+            image: telegramPhotoUrl, // URL eterna do Telegram
+            timestamp: Date.now()
         };
 
-        listaDePacks.unshift(novoPack);
+        db.insert(novoPack, (err, doc) => {
+            if (err) console.log("Erro ao salvar no banco");
+            res.status(200).json(doc);
+        });
 
-        // Envio para o Telegram (Sem deixar o servidor travar)
-        if (token && chat_id) {
-            const sendToTelegram = async () => {
-                try {
-                    if (req.files['photo']) {
-                        const photoForm = new FormData();
-                        photoForm.append('chat_id', chat_id);
-                        photoForm.append('photo', req.files['photo'][0].buffer, req.files['photo'][0].originalname);
-                        photoForm.append('caption', `🔥 *KODASAMPLES:* ${description}\n📝 ${shortDesc || ''}\n🔗 ${link || ''}`);
-                        photoForm.append('parse_mode', 'Markdown');
-                        await axios.post(`https://api.telegram.org/bot${token}/sendPhoto`, photoForm, { headers: photoForm.getHeaders() });
-                    }
-                    if (req.files['file']) {
-                        const fileForm = new FormData();
-                        fileForm.append('chat_id', chat_id);
-                        fileForm.append('document', req.files['file'][0].buffer, req.files['file'][0].originalname);
-                        await axios.post(`https://api.telegram.org/bot${token}/sendDocument`, fileForm, { headers: fileForm.getHeaders() });
-                    }
-                } catch (e) { console.log("Erro no bot"); }
-            };
-            sendToTelegram();
-        }
-
-        res.status(200).json({ message: "OK" });
     } catch (error) {
-        res.status(500).json({ error: "Erro" });
+        console.error(error);
+        res.status(500).send("Erro no processamento");
     }
 });
 
-app.listen(process.env.PORT || 3000);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`KodaServer rodando na porta ${PORT}`));
 
