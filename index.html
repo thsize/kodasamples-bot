@@ -23,7 +23,6 @@
             border: 1px solid #1a1a1a;
         }
         
-        /* Modal do Painel de Controlo */
         #uploadModal {
             display: none;
             position: fixed;
@@ -121,9 +120,8 @@
             <h2 class="text-3xl font-black italic">KODA USER</h2>
             <p class="text-purple-500 font-bold text-xs tracking-widest mt-1 uppercase">Produtor & Admin</p>
         </div>
-
         <div class="space-y-4">
-            <div class="card-main p-6 flex items-center justify-between border-zinc-900 hover:border-purple-600 transition cursor-pointer">
+             <div class="card-main p-6 flex items-center justify-between border-zinc-900 hover:border-purple-600 transition cursor-pointer">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 bg-zinc-900 rounded-xl flex items-center justify-center">
                         <i class="fab fa-instagram text-2xl text-pink-500"></i>
@@ -145,7 +143,7 @@
             </button>
             <h3 class="text-zinc-500 text-[10px] font-black tracking-[0.3em] uppercase mb-8">Cloud Control Panel</h3>
             <input type="text" id="kitName" class="panel-input" placeholder="Nome do Kit / Descrição">
-            <input type="text" id="kitLink" class="panel-input" placeholder="Link Externo (VST/Drive)">
+            <input type="text" id="kitLink" class="panel-input" placeholder="Link Externo (Drive/Mega/etc)">
             <div class="flex justify-between items-center mt-8 px-4">
                 <div class="flex flex-col items-center gap-2">
                     <input type="file" id="fileInput" class="hidden">
@@ -178,18 +176,15 @@
     </nav>
 
     <script>
-        // Carrega os packs salvos no navegador para não sumirem ao dar F5
         let packs = JSON.parse(localStorage.getItem('kodaPacks')) || [
-            { id: Date.now(), title: "KODASAMPLES WELCOME", type: "INFO", link: "#" }
+            { id: 1, title: "KODASAMPLES CLOUD", type: "INFO", link: "https://instagram.com" }
         ];
 
         function switchPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('page-active'));
             document.getElementById(`${pageId}Page`).classList.add('page-active');
-            
             const navHome = document.getElementById('navHome');
             const navProfile = document.getElementById('navProfile');
-            
             if(pageId === 'home') {
                 navHome.classList.replace('text-zinc-600', 'text-purple-500');
                 navProfile.classList.replace('text-purple-500', 'text-zinc-600');
@@ -211,40 +206,35 @@
             const status = document.getElementById('statusLabel');
             const icon = document.getElementById('subirIcon');
 
-            if (!kitName && !fileInput.files[0]) {
-                alert("Preenche o nome ou anexa um arquivo!");
+            // Correção: Agora permite subir se tiver pelo menos o nome ou o link
+            if (!kitName && !kitLink && !fileInput.files[0]) {
+                alert("Preenche pelo menos o nome ou anexa algo!");
                 return;
             }
 
             const formData = new FormData();
-            formData.append('description', kitName);
-            formData.append('link', kitLink);
-            if (fileInput.files[0]) {
-                formData.append('file', fileInput.files[0]);
-            }
+            formData.append('description', kitName || "Sem nome");
+            formData.append('link', kitLink || "");
+            if (fileInput.files[0]) formData.append('file', fileInput.files[0]);
 
             status.innerText = "A subir...";
             icon.className = "fas fa-circle-notch loading-spin text-white";
 
             try {
-                // Rota relativa para funcionar no Render
                 const response = await fetch('/upload', { method: 'POST', body: formData });
-                const result = await response.json();
-
                 if (response.ok) {
                     status.innerText = "✅ Sucesso!";
                     
-                    // Adiciona na lista local para aparecer o card
                     const novoPack = {
                         id: Date.now(),
-                        title: kitName || "Novo Pack",
+                        title: kitName || "Novo Item",
                         type: fileInput.files[0] ? "ARQUIVO" : "LINK",
                         link: kitLink || "#"
                     };
 
-                    packs.unshift(novoPack); // Coloca no início da lista
-                    localStorage.setItem('kodaPacks', JSON.stringify(packs)); // Salva no navegador
-                    render(); // Atualiza a tela
+                    packs.unshift(novoPack);
+                    localStorage.setItem('kodaPacks', JSON.stringify(packs));
+                    render();
                     
                     setTimeout(() => {
                         toggleModal(false);
@@ -252,14 +242,12 @@
                         document.getElementById('kitLink').value = "";
                         fileInput.value = "";
                         status.innerText = "Aguardando...";
-                    }, 1500);
-
+                    }, 1200);
                 } else {
-                    status.innerText = "❌ Erro no Servidor";
+                    status.innerText = "❌ Erro Servidor";
                 }
             } catch (err) {
                 status.innerText = "❌ Sem Ligação";
-                console.error(err);
             } finally {
                 icon.className = "fas fa-cloud-upload-alt text-white";
             }
@@ -281,21 +269,10 @@
                                 <i class="fas fa-download"></i>
                             </a>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
             document.getElementById('packCounter').innerText = `${packs.length} Itens`;
         }
-
-        // Pesquisa em tempo real
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const termo = e.target.value.toLowerCase();
-            const cards = document.querySelectorAll('.card-main');
-            cards.forEach(card => {
-                const titulo = card.querySelector('h3').innerText.toLowerCase();
-                card.style.display = titulo.includes(termo) ? 'block' : 'none';
-            });
-        });
 
         window.onload = render;
     </script>
