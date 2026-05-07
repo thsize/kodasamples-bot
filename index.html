@@ -7,18 +7,85 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
-        body { background: #000; color: white; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-        .header-gradient { background: linear-gradient(90deg, #581c87, #9333ea, #c026d3); }
-        .card-main { background: #0a0a0a; border-radius: 24px; overflow: hidden; border: 1px solid #1a1a1a; }
-        #uploadModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; backdrop-filter: blur(12px); align-items: center; justify-content: center; padding: 20px; }
-        .control-panel { background: #000; width: 100%; max-width: 450px; border-radius: 32px; border: 1px dashed #333; padding: 24px; position: relative; }
-        .panel-input { background: #111; border: 1px solid #222; border-radius: 16px; padding: 16px; width: 100%; color: white; margin-bottom: 12px; outline: none; font-size: 14px; }
+        body {
+            background: #000;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .header-gradient {
+            background: linear-gradient(90deg, #581c87, #9333ea, #c026d3);
+        }
+        .card-main {
+            background: #0a0a0a;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid #1a1a1a;
+        }
+        
+        /* Modal do Painel de Controlo */
+        #uploadModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .control-panel {
+            background: #000;
+            width: 100%;
+            max-width: 450px;
+            border-radius: 32px;
+            border: 1px dashed #333;
+            padding: 24px;
+            position: relative;
+        }
+        .panel-input {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 16px;
+            padding: 16px;
+            width: 100%;
+            color: white;
+            margin-bottom: 12px;
+            outline: none;
+            font-size: 14px;
+        }
+        
         .btn-anexar { background: #9333ea; width: 58px; height: 58px; border-radius: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4); }
         .btn-subir { background: #22c55e; width: 58px; height: 58px; border-radius: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); }
-        .profile-avatar { width: 110px; height: 110px; border-radius: 35px; background: linear-gradient(45deg, #581c87, #c026d3); display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 900; border: 4px solid #111; margin: 0 auto; }
-        .pack-image { background: linear-gradient(180deg, #6b21a8, #000); height: 220px; display: flex; align-items: center; justify-content: center; font-size: 4.5rem; font-weight: 900; }
+
+        .profile-avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 35px;
+            background: linear-gradient(45deg, #581c87, #c026d3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 900;
+            border: 4px solid #111;
+            margin: 0 auto;
+        }
+
+        .pack-image {
+            background: linear-gradient(180deg, #6b21a8, #000);
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4.5rem;
+            font-weight: 900;
+        }
+
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .loading-spin { animation: spin 1s linear infinite; }
+
         .page { display: none; }
         .page-active { display: block; }
     </style>
@@ -32,10 +99,13 @@
     <main id="homePage" class="page page-active">
         <div class="px-6 pt-8">
             <div class="relative">
-                <input id="searchInput" type="text" class="w-full bg-zinc-900 border border-zinc-800 rounded-2xl py-4 pl-12 text-lg focus:outline-none focus:border-purple-600 transition-all" placeholder="Procurar na biblioteca...">
+                <input id="searchInput" type="text" 
+                       class="w-full bg-zinc-900 border border-zinc-800 rounded-2xl py-4 pl-12 text-lg focus:outline-none focus:border-purple-600 transition-all"
+                       placeholder="Procurar na biblioteca...">
                 <i class="fas fa-search absolute left-5 top-5 text-zinc-500"></i>
             </div>
         </div>
+
         <div class="px-6 pt-10">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold italic">Biblioteca</h2>
@@ -51,109 +121,182 @@
             <h2 class="text-3xl font-black italic">KODA USER</h2>
             <p class="text-purple-500 font-bold text-xs tracking-widest mt-1 uppercase">Produtor & Admin</p>
         </div>
+
         <div class="space-y-4">
             <div class="card-main p-6 flex items-center justify-between border-zinc-900 hover:border-purple-600 transition cursor-pointer">
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-zinc-900 rounded-xl flex items-center justify-center"><i class="fab fa-instagram text-2xl text-pink-500"></i></div>
-                    <div><span class="font-bold text-base block">Instagram Oficial</span><span class="text-[10px] text-zinc-500 uppercase tracking-tighter">Segue o nosso trabalho</span></div>
+                    <div class="w-12 h-12 bg-zinc-900 rounded-xl flex items-center justify-center">
+                        <i class="fab fa-instagram text-2xl text-pink-500"></i>
+                    </div>
+                    <div>
+                        <span class="font-bold text-base block">Instagram Oficial</span>
+                        <span class="text-[10px] text-zinc-500 uppercase tracking-tighter">Segue o nosso trabalho</span>
+                    </div>
                 </div>
                 <i class="fas fa-chevron-right text-zinc-700 text-xs"></i>
             </div>
-        </div>
-        <div class="mt-16 text-center space-y-2 opacity-60">
-            <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Feito por <span class="text-white">THSIZE</span></p>
         </div>
     </main>
 
     <div id="uploadModal">
         <div class="control-panel text-center">
-            <button onclick="toggleModal(false)" class="absolute -top-12 right-0 text-white opacity-50 hover:opacity-100 p-2"><i class="fas fa-times text-2xl"></i></button>
+            <button onclick="toggleModal(false)" class="absolute -top-12 right-0 text-white opacity-50 hover:opacity-100 p-2">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
             <h3 class="text-zinc-500 text-[10px] font-black tracking-[0.3em] uppercase mb-8">Cloud Control Panel</h3>
             <input type="text" id="kitName" class="panel-input" placeholder="Nome do Kit / Descrição">
             <input type="text" id="kitLink" class="panel-input" placeholder="Link Externo (VST/Drive)">
             <div class="flex justify-between items-center mt-8 px-4">
                 <div class="flex flex-col items-center gap-2">
                     <input type="file" id="fileInput" class="hidden">
-                    <label for="fileInput" class="btn-anexar cursor-pointer active:scale-90 transition"><i class="fas fa-paperclip text-white text-xl"></i></label>
+                    <label for="fileInput" class="btn-anexar cursor-pointer active:scale-90 transition">
+                        <i class="fas fa-paperclip text-white text-xl"></i>
+                    </label>
                     <span class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">Anexar</span>
                 </div>
                 <div id="statusLabel" class="text-[11px] italic text-zinc-600 font-medium">Aguardando...</div>
                 <div class="flex flex-col items-center gap-2">
-                    <button onclick="uploadToRailway()" class="btn-subir active:scale-90 transition"><i id="subirIcon" class="fas fa-cloud-upload-alt text-white text-xl"></i></button>
+                    <button onclick="uploadToRender()" class="btn-subir active:scale-90 transition">
+                        <i id="subirIcon" class="fas fa-cloud-upload-alt text-white text-xl"></i>
+                    </button>
                     <span class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">Subir</span>
                 </div>
             </div>
-            <div id="resultId" class="mt-8 text-[10px] font-mono text-purple-400 break-all hidden select-all bg-zinc-900/80 p-3 rounded-xl border border-zinc-800"></div>
         </div>
     </div>
 
     <nav class="fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-lg border-t border-zinc-900 py-5 px-12 flex justify-between items-center z-50">
-        <div onclick="switchPage('home')" id="navHome" class="flex flex-col items-center text-purple-500 cursor-pointer active:scale-90 transition"><i class="fas fa-home text-2xl"></i></div>
-        <div onclick="toggleModal(true)" class="flex flex-col items-center text-zinc-600 cursor-pointer active:scale-90 transition"><i class="fas fa-folder-open text-2xl"></i></div>
-        <div onclick="switchPage('profile')" id="navProfile" class="flex flex-col items-center text-zinc-600 cursor-pointer active:scale-90 transition"><i class="fas fa-user-circle text-2xl"></i></div>
+        <div onclick="switchPage('home')" id="navHome" class="flex flex-col items-center text-purple-500 cursor-pointer active:scale-90 transition">
+            <i class="fas fa-home text-2xl"></i>
+        </div>
+        <div onclick="toggleModal(true)" class="flex flex-col items-center text-zinc-600 cursor-pointer active:scale-90 transition">
+            <i class="fas fa-folder-open text-2xl"></i>
+        </div>
+        <div onclick="switchPage('profile')" id="navProfile" class="flex flex-col items-center text-zinc-600 cursor-pointer active:scale-90 transition">
+            <i class="fas fa-user-circle text-2xl"></i>
+        </div>
     </nav>
 
     <script>
-        const RAILWAY_URL = 'https://kodasamples-bot-production.up.railway.app';
-        let packs = [{ id: "1", title: "ALEGRIA KOMPA MP3", type: "KOMPA", file_id: "ID_TESTE" }];
+        // Carrega os packs salvos no navegador para não sumirem ao dar F5
+        let packs = JSON.parse(localStorage.getItem('kodaPacks')) || [
+            { id: Date.now(), title: "KODASAMPLES WELCOME", type: "INFO", link: "#" }
+        ];
 
         function switchPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('page-active'));
             document.getElementById(`${pageId}Page`).classList.add('page-active');
+            
             const navHome = document.getElementById('navHome');
             const navProfile = document.getElementById('navProfile');
-            if(pageId === 'home') { navHome.className = 'text-purple-500'; navProfile.className = 'text-zinc-600'; }
-            else { navProfile.className = 'text-purple-500'; navHome.className = 'text-zinc-600'; }
+            
+            if(pageId === 'home') {
+                navHome.classList.replace('text-zinc-600', 'text-purple-500');
+                navProfile.classList.replace('text-purple-500', 'text-zinc-600');
+            } else {
+                navProfile.classList.replace('text-zinc-600', 'text-purple-500');
+                navHome.classList.replace('text-purple-500', 'text-zinc-600');
+            }
+            toggleModal(false);
         }
 
-        function toggleModal(show) { document.getElementById('uploadModal').style.display = show ? 'flex' : 'none'; }
+        function toggleModal(show) {
+            document.getElementById('uploadModal').style.display = show ? 'flex' : 'none';
+        }
 
-        async function uploadToRailway() {
+        async function uploadToRender() {
             const fileInput = document.getElementById('fileInput');
-            const name = document.getElementById('kitName').value;
-            const link = document.getElementById('kitLink').value;
+            const kitName = document.getElementById('kitName').value;
+            const kitLink = document.getElementById('kitLink').value;
             const status = document.getElementById('statusLabel');
             const icon = document.getElementById('subirIcon');
-            const resultBox = document.getElementById('resultId');
 
-            if (!fileInput.files[0] && !link) return alert("Selecione um arquivo ou link!");
+            if (!kitName && !fileInput.files[0]) {
+                alert("Preenche o nome ou anexa um arquivo!");
+                return;
+            }
 
             const formData = new FormData();
-            if(fileInput.files[0]) formData.append('file', fileInput.files[0]);
-            formData.append('description', name);
-            formData.append('link', link);
+            formData.append('description', kitName);
+            formData.append('link', kitLink);
+            if (fileInput.files[0]) {
+                formData.append('file', fileInput.files[0]);
+            }
 
-            status.innerText = "Enviando...";
+            status.innerText = "A subir...";
             icon.className = "fas fa-circle-notch loading-spin text-white";
 
             try {
-                // Rota relativa para evitar erro de CORS
+                // Rota relativa para funcionar no Render
                 const response = await fetch('/upload', { method: 'POST', body: formData });
                 const result = await response.json();
+
                 if (response.ok) {
                     status.innerText = "✅ Sucesso!";
-                    if(result.file_id) {
-                        resultBox.innerText = `ID: ${result.file_id}`;
-                        resultBox.classList.remove('hidden');
-                    }
-                } else { status.innerText = "❌ Erro"; }
-            } catch (err) { status.innerText = "❌ Falha"; }
-            finally { icon.className = "fas fa-cloud-upload-alt text-white"; }
+                    
+                    // Adiciona na lista local para aparecer o card
+                    const novoPack = {
+                        id: Date.now(),
+                        title: kitName || "Novo Pack",
+                        type: fileInput.files[0] ? "ARQUIVO" : "LINK",
+                        link: kitLink || "#"
+                    };
+
+                    packs.unshift(novoPack); // Coloca no início da lista
+                    localStorage.setItem('kodaPacks', JSON.stringify(packs)); // Salva no navegador
+                    render(); // Atualiza a tela
+                    
+                    setTimeout(() => {
+                        toggleModal(false);
+                        document.getElementById('kitName').value = "";
+                        document.getElementById('kitLink').value = "";
+                        fileInput.value = "";
+                        status.innerText = "Aguardando...";
+                    }, 1500);
+
+                } else {
+                    status.innerText = "❌ Erro no Servidor";
+                }
+            } catch (err) {
+                status.innerText = "❌ Sem Ligação";
+                console.error(err);
+            } finally {
+                icon.className = "fas fa-cloud-upload-alt text-white";
+            }
         }
 
         function render() {
             const grid = document.getElementById('packsGrid');
-            grid.innerHTML = packs.map(p => `
-                <div class="card-main">
-                    <div class="pack-image">KODA</div>
-                    <div class="p-6 flex justify-between items-center bg-zinc-950">
-                        <div class="truncate pr-4"><h3 class="text-xl font-bold text-white mb-1 truncate">${p.title}</h3><p class="text-purple-500 text-[10px] font-black tracking-widest uppercase">${p.type}</p></div>
-                        <button class="w-12 h-12 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-center text-purple-500 active:scale-90 transition shadow-lg"><i class="fas fa-download"></i></button>
+            grid.innerHTML = '';
+            packs.forEach(p => {
+                grid.innerHTML += `
+                    <div class="card-main">
+                        <div class="pack-image">KODA</div>
+                        <div class="p-6 flex justify-between items-center bg-zinc-950">
+                            <div class="truncate pr-4">
+                                <h3 class="text-xl font-bold text-white mb-1 truncate">${p.title}</h3>
+                                <p class="text-purple-500 text-[10px] font-black tracking-widest uppercase">${p.type}</p>
+                            </div>
+                            <a href="${p.link}" target="_blank" class="w-12 h-12 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-center text-purple-500 active:scale-90 transition shadow-lg">
+                                <i class="fas fa-download"></i>
+                            </a>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            });
             document.getElementById('packCounter').innerText = `${packs.length} Itens`;
         }
+
+        // Pesquisa em tempo real
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const termo = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.card-main');
+            cards.forEach(card => {
+                const titulo = card.querySelector('h3').innerText.toLowerCase();
+                card.style.display = titulo.includes(termo) ? 'block' : 'none';
+            });
+        });
+
         window.onload = render;
     </script>
 </body>
