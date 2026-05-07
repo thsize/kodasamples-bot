@@ -3,12 +3,27 @@ const multer = require('multer');
 const axios = require('axios');
 const FormData = require('form-data');
 const cors = require('cors');
-const Datastore = require('nedb');
-const path = require('path');
+const mongoose = require('mongoose');
 
 const app = express();
-// O banco de dados guarda os packs num ficheiro local
-const db = new Datastore({ filename: 'packs.db', autoload: true });
+
+// 1. CONEXÃO COM O MONGODB
+// A variável MONGO_URI deve estar configurada no painel do Render
+const mongoURI = process.env.MONGO_URI;
+
+mongoose.connect(mongoURI)
+    .then(() => console.log("🔥 Banco de Dados MongoDB Conectado!"))
+    .catch(err => console.error("❌ Erro ao conectar ao MongoDB:", err));
+
+// 2. MODELO DE DADOS (O que será salvo no banco)
+const PackSchema = new mongoose.Schema({
+    title: String,
+    description: String,
+    link: String,
+    image: String,
+    timestamp: { type: Date, default: Date.now }
+});
+const Pack = mongoose.model('Pack', PackSchema);
 
 app.use(cors());
 app.use(express.json());
@@ -16,77 +31,72 @@ app.use(express.static('.'));
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Variáveis que configuraste no Render
+// Configurações do Bot (Vindas do Render)
 const TOKEN = process.env.BOT_TOKEN;
 const CHAT_ID = process.env.CHAT_ID;
 
-// 1. ROTA PARA LISTAR OS PACKS NO SITE
-app.get('/packs', (req, res) => {
-    db.find({}).sort({ timestamp: -1 }).exec((err, docs) => {
-        if (err) {
-            console.error("Erro ao ler banco:", err);
-            return res.status(500).json([]);
-        }
-        res.json(docs);
-    });
+// 3. ROTA PARA LISTAR OS PACKS NO SITE
+app.get('/packs', async (req, res) => {
+    try {
+        // Puxa todos os packs do MongoDB ordenados pelo mais recente
+        const packs = await Pack.find().sort({ timestamp: -1 });
+        res.json(packs);
+    } catch (err) {
+        console.error("Erro ao buscar packs:", err);
+        res.status(500).json([]);
+    }
 });
 
-// 2. ROTA DE UPLOAD (SITE -> SERVIDOR -> TELEGRAM)
+// 4. ROTA DE UPLOAD (SITE -> TELEGRAM -> MONGODB)
 app.post('/upload', upload.fields([{ name: 'photo' }, { name: 'file' }]), async (req, res) => {
     try {
         const { description, shortDesc, link } = req.body;
         let telegramPhotoUrl = "";
 
+        // Validar se o Bot está configurado
         if (!TOKEN || !CHAT_ID) {
-            console.error("ERRO: BOT_TOKEN ou CHAT_ID não configurados no Render.");
-            return res.status(500).send("Configuração incompleta");
+            return res.status(500).send("Bot não configurado no servidor.");
         }
 
-        // Enviar para o Telegram
+        // A. Enviar a imagem para o Telegram
         if (req.files['photo']) {
             const photoForm = new FormData();
             photoForm.append('chat_id', CHAT_ID);
             photoForm.append('photo', req.files['photo'][0].buffer, { filename: 'capa.jpg' });
-            photoForm.append('caption', `🔥 *NOVO PACK KODASAMPLES*\n\n📦 ${description}\n📝 ${shortDesc}\n🔗 Link: ${link}`);
+            photoForm.append('caption', `🔥 *KODASAMPLES:* ${description}\n\n📝 ${shortDesc}\n🔗 Link: ${link}`);
             photoForm.append('parse_mode', 'Markdown');
 
             const telRes = await axios.post(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, photoForm, {
                 headers: photoForm.getHeaders()
             });
 
-            // Extrair o link da foto para o card não ficar vazio
+            // B. Pegar o link real da imagem nos servidores do Telegram
             const fileId = telRes.data.result.photo[telRes.data.result.photo.length - 1].file_id;
             const fileInfo = await axios.get(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
             telegramPhotoUrl = `https://api.telegram.org/file/bot${TOKEN}/${fileInfo.data.result.file_path}`;
         }
 
-        // Salvar os dados do pack no banco NeDB
-        const novoPack = {
+        // C. Salvar as informações permanentemente no MongoDB
+        const novoPack = new Pack({
             title: description,
             description: shortDesc || "Premium Pack",
             link: link,
-            image: telegramPhotoUrl,
-            timestamp: Date.now()
-        };
-
-        db.insert(novoPack, (err, doc) => {
-            if (err) {
-                console.error("Erro ao inserir no banco:", err);
-                return res.status(500).send("Erro ao salvar");
-            }
-            console.log("Pack salvo com sucesso!");
-            res.status(200).json(doc);
+            image: telegramPhotoUrl
         });
 
+        await novoPack.save();
+        console.log("✅ Pack salvo no MongoDB e enviado ao Telegram!");
+        res.status(200).json(novoPack);
+
     } catch (error) {
-        console.error("Erro no processo de upload:", error.message);
-        res.status(500).send("Erro interno no servidor");
+        console.error("Erro no processo de upload:", error);
+        res.status(500).send("Erro ao processar upload.");
     }
 });
 
-// 3. INICIAR O SERVIDOR
+// 5. INICIAR SERVIDOR
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor KodaSamples vivo na porta ${PORT}`);
+    console.log(`🚀 Servidor KodaSamples rodando na porta ${PORT}`);
 });
 
