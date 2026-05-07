@@ -1,57 +1,60 @@
 const express = require('express');
-const fileUpload = require('express-fileupload');
+const multer = require('multer');
 const axios = require('axios');
 const FormData = require('form-data');
-const fs = require('fs');
-const path = require('path');
 const cors = require('cors');
 
 const app = express();
-
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
-app.use(fileUpload({ useTempFiles: true, tempFileDir: '/tmp/' }));
+app.use(express.static('.')); // Para servir o teu index.html
 
-const BOT_TOKEN = process.env.BOT_TOKEN;
-const CHAT_ID = process.env.CHAT_ID;
+const upload = multer({ storage: multer.memoryStorage() });
 
-// Rota principal
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+// ESTA É A LISTA QUE TODOS VÃO VER
+let listaDePacks = []; 
+
+// Rota para o site puxar os packs ao abrir
+app.get('/packs', (req, res) => {
+    res.json(listaDePacks);
 });
 
-// Rota de Upload
-app.post('/upload', async (req, res) => {
-    const { description, link } = req.body;
-    const file = req.files ? req.files.file : null;
-
-    let caption = `<b>KODASAMPLES CLOUD</b>\n\n`;
-    if(description) caption += `📝 <b>Pack:</b> ${description}\n`;
-    if(link) caption += `🔗 <b>Link:</b> ${link}`;
-
+app.post('/upload', upload.fields([{ name: 'file' }, { name: 'photo' }]), async (req, res) => {
     try {
-        if (file) {
-            const form = new FormData();
-            form.append('document', fs.createReadStream(file.tempFilePath), { filename: file.name });
-            await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument?chat_id=${CHAT_ID}&caption=${encodeURIComponent(caption)}&parse_mode=HTML`, form, {
-                headers: form.getHeaders()
-            });
-        } else {
-            await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                chat_id: CHAT_ID,
-                text: caption,
-                parse_mode: 'HTML'
-            });
+        const { description, link, shortDesc } = req.body;
+        
+        // Criar o objeto do pack para o site
+        const novoPack = {
+            id: Date.now(),
+            title: description,
+            description: shortDesc || "Premium Pack",
+            link: link || "#",
+            // Convertemos a foto em Base64 para o servidor enviar ao site
+            image: req.files['photo'] ? `data:${req.files['photo'][0].mimetype};base64,${req.files['photo'][0].buffer.toString('base64')}` : null,
+            type: req.files['file'] ? "ARQUIVO" : "LINK"
+        };
+
+        // Adiciona no início da lista global
+        listaDePacks.unshift(novoPack);
+
+        // ENVIAR PARA O TELEGRAM (O teu código original)
+        const chat_id = process.env.TELEGRAM_CHAT_ID;
+        const token = process.env.TELEGRAM_TOKEN;
+
+        if (req.files['photo']) {
+            const photoForm = new FormData();
+            photoForm.append('chat_id', chat_id);
+            photoForm.append('photo', req.files['photo'][0].buffer, req.files['photo'][0].originalname);
+            photoForm.append('caption', `🔥 *KODASAMPLES:* ${description}\n📝 ${shortDesc}\n🔗 ${link}`);
+            photoForm.append('parse_mode', 'Markdown');
+            await axios.post(`https://api.telegram.org/bot${token}/sendPhoto`, photoForm, { headers: photoForm.getHeaders() });
         }
-        res.status(200).json({ ok: true });
-    } catch (e) {
-        res.status(500).json({ ok: false, error: e.message });
+
+        res.status(200).json({ message: "Sucesso!" });
+    } catch (error) {
+        res.status(500).json({ error: "Erro no servidor" });
     }
 });
 
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 KodaSamples Online na porta ${PORT}`);
-});
-	
+app.listen(process.env.PORT || 3000, () => console.log("KodaServer ON!"));
+

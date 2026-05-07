@@ -9,7 +9,8 @@
     <style>
         body { background: #000; color: white; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
         .header-gradient { background: linear-gradient(90deg, #581c87, #9333ea, #c026d3); }
-        .card-main { background: #0a0a0a; border-radius: 24px; overflow: hidden; border: 1px solid #1a1a1a; }
+        .card-main { background: #0a0a0a; border-radius: 24px; overflow: hidden; border: 1px solid #1a1a1a; transition: transform 0.2s; }
+        .card-main:active { transform: scale(0.98); }
         #uploadModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; backdrop-filter: blur(12px); align-items: center; justify-content: center; padding: 20px; }
         .control-panel { background: #000; width: 100%; max-width: 450px; border-radius: 32px; border: 1px dashed #333; padding: 24px; position: relative; max-height: 90vh; overflow-y: auto; }
         .panel-input { background: #111; border: 1px solid #222; border-radius: 16px; padding: 16px; width: 100%; color: white; margin-bottom: 12px; outline: none; font-size: 14px; }
@@ -33,7 +34,7 @@
     <main id="homePage" class="page page-active">
         <div class="px-6 pt-8">
             <div class="relative">
-                <input id="searchInput" type="text" class="w-full bg-zinc-900 border border-zinc-800 rounded-2xl py-4 pl-12 text-lg focus:outline-none focus:border-purple-600 transition-all" placeholder="Procurar na biblioteca...">
+                <input id="searchInput" type="text" class="w-full bg-zinc-900 border border-zinc-800 rounded-2xl py-4 pl-12 text-lg focus:outline-none focus:border-purple-600 transition-all" placeholder="Procurar pack...">
                 <i class="fas fa-search absolute left-5 top-5 text-zinc-500"></i>
             </div>
         </div>
@@ -42,18 +43,18 @@
                 <h2 class="text-2xl font-bold italic">Biblioteca</h2>
                 <span id="packCounter" class="text-zinc-500 text-sm font-medium">0 Itens</span>
             </div>
-            <div id="packsGrid" class="space-y-8"></div>
+            <div id="packsGrid" class="space-y-8">
+                </div>
         </div>
     </main>
 
-    <main id="profilePage" class="page px-6 pt-10">
-        <div class="text-center mb-12">
-            <div class="profile-avatar mb-4 shadow-2xl w-[110px] h-[110px] rounded-[35px] bg-gradient-to-br from-purple-900 to-fuchsia-600 flex items-center justify-center text-5xl font-black mx-auto border-4 border-zinc-900">K</div>
-            <h2 class="text-3xl font-black italic">KODA USER</h2>
-            <p class="text-purple-500 font-bold text-xs tracking-widest mt-1 uppercase">Produtor & Admin</p>
-        </div>
-        <div class="space-y-4">
-            <div class="card-main p-6 flex items-center justify-between border-zinc-900 hover:border-purple-600 transition cursor-pointer">
+    <main id="profilePage" class="page px-6 pt-10 text-center">
+        <div class="profile-avatar mb-4 w-[110px] h-[110px] rounded-[35px] bg-gradient-to-br from-purple-900 to-fuchsia-600 flex items-center justify-center text-5xl font-black mx-auto border-4 border-zinc-900 shadow-2xl">K</div>
+        <h2 class="text-3xl font-black italic uppercase">KODA USER</h2>
+        <p class="text-purple-500 font-bold text-xs tracking-widest mt-1 uppercase">Produtor & Admin</p>
+        
+        <div class="mt-10 space-y-4 text-left">
+            <div class="card-main p-6 flex items-center justify-between border-zinc-900 hover:border-purple-600 cursor-pointer">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 bg-zinc-900 rounded-xl flex items-center justify-center"><i class="fab fa-instagram text-2xl text-pink-500"></i></div>
                     <div><span class="font-bold text-base block">Instagram Oficial</span><span class="text-[10px] text-zinc-500 uppercase tracking-tighter">Segue o nosso trabalho</span></div>
@@ -61,16 +62,17 @@
                 <i class="fas fa-chevron-right text-zinc-700 text-xs"></i>
             </div>
         </div>
+        <p class="mt-16 text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] opacity-50">Feito por <span class="text-white">THSIZE</span></p>
     </main>
 
     <div id="uploadModal">
         <div class="control-panel text-center">
             <button onclick="toggleModal(false)" class="absolute -top-12 right-0 text-white opacity-50 p-2"><i class="fas fa-times text-2xl"></i></button>
-            <h3 class="text-zinc-500 text-[10px] font-black tracking-[0.3em] uppercase mb-6">Painel de Upload</h3>
+            <h3 class="text-zinc-500 text-[10px] font-black tracking-[0.3em] uppercase mb-6">Painel de Lançamento</h3>
             
             <input type="text" id="kitName" class="panel-input" placeholder="Título do Pack">
-            <input type="text" id="kitDesc" class="panel-input" placeholder="Descrição (ex: 808, Claps, Melodias)">
-            <input type="text" id="kitLink" class="panel-input" placeholder="Link de Download (Opcional)">
+            <input type="text" id="kitDesc" class="panel-input" placeholder="Descrição curta (ex: Funk, Trap, 808)">
+            <input type="text" id="kitLink" class="panel-input" placeholder="Link de Download (Drive/Mega)">
             
             <div id="imgPreview" class="hidden mb-4 w-full h-32 rounded-2xl overflow-hidden border border-zinc-800">
                 <img id="previewTag" src="" class="w-full h-full object-cover">
@@ -94,49 +96,47 @@
                     <span class="text-[9px] text-zinc-500 font-bold uppercase">Subir</span>
                 </div>
             </div>
-            <div id="statusLabel" class="mt-4 text-[11px] italic text-zinc-500">Aguardando arquivos...</div>
+            <div id="statusLabel" class="mt-4 text-[11px] italic text-zinc-500">Pronto para subir</div>
         </div>
     </div>
 
     <nav class="fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-lg border-t border-zinc-900 py-5 px-12 flex justify-between items-center z-50">
-        <div onclick="switchPage('home')" id="navHome" class="flex flex-col items-center text-purple-500 cursor-pointer transition"><i class="fas fa-home text-2xl"></i></div>
-        <div onclick="toggleModal(true)" class="flex flex-col items-center text-zinc-600 cursor-pointer transition"><i class="fas fa-plus-circle text-2xl"></i></div>
-        <div onclick="switchPage('profile')" id="navProfile" class="flex flex-col items-center text-zinc-600 cursor-pointer transition"><i class="fas fa-user-circle text-2xl"></i></div>
+        <div onclick="switchPage('home')" id="navHome" class="flex flex-col items-center text-purple-500 cursor-pointer transition-all"><i class="fas fa-home text-2xl"></i></div>
+        <div onclick="toggleModal(true)" class="flex flex-col items-center text-zinc-600 cursor-pointer transition-all"><i class="fas fa-plus-circle text-2xl"></i></div>
+        <div onclick="switchPage('profile')" id="navProfile" class="flex flex-col items-center text-zinc-600 cursor-pointer transition-all"><i class="fas fa-user-circle text-2xl"></i></div>
     </nav>
 
     <script>
-        let packs = JSON.parse(localStorage.getItem('kodaPacks')) || [];
+        let packs = [];
 
-        function switchPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('page-active'));
-            document.getElementById(`${pageId}Page`).classList.add('page-active');
-            const navHome = document.getElementById('navHome');
-            const navProfile = document.getElementById('navProfile');
-            if(pageId === 'home') {
-                navHome.className = 'flex flex-col items-center text-purple-500 cursor-pointer';
-                navProfile.className = 'flex flex-col items-center text-zinc-600 cursor-pointer';
-            } else {
-                navProfile.className = 'flex flex-col items-center text-purple-500 cursor-pointer';
-                navHome.className = 'flex flex-col items-center text-zinc-600 cursor-pointer';
+        // BUSCA PACKS DO SERVIDOR (Para todos verem)
+        async function fetchPacks() {
+            try {
+                const response = await fetch('/packs');
+                if (response.ok) {
+                    packs = await response.json();
+                    render();
+                }
+            } catch (err) {
+                console.error("Erro ao carregar do servidor");
             }
         }
 
-        function toggleModal(show) { document.getElementById('uploadModal').style.display = show ? 'flex' : 'none'; }
-
-        // Função para mostrar a foto selecionada antes de subir
+        // PREVIEW DA FOTO SELECIONADA
         function previewImage(input) {
             const preview = document.getElementById('imgPreview');
             const tag = document.getElementById('previewTag');
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = (e) => {
                     tag.src = e.target.result;
                     preview.classList.remove('hidden');
-                }
+                };
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
+        // UPLOAD PARA O RENDER
         async function uploadToRender() {
             const name = document.getElementById('kitName').value;
             const desc = document.getElementById('kitDesc').value;
@@ -146,49 +146,37 @@
             const status = document.getElementById('statusLabel');
             const icon = document.getElementById('subirIcon');
 
-            if (!name) return alert("Dê um nome ao pack!");
+            if (!name) return alert("Dê um nome ao seu pack!");
 
             const formData = new FormData();
             formData.append('description', name);
-            if(fileInput.files[0]) formData.append('file', fileInput.files[0]);
-            if(photoInput.files[0]) formData.append('photo', photoInput.files[0]);
+            formData.append('shortDesc', desc);
+            formData.append('link', link);
+            if (fileInput.files[0]) formData.append('file', fileInput.files[0]);
+            if (photoInput.files[0]) formData.append('photo', photoInput.files[0]);
 
-            status.innerText = "Processando upload...";
+            status.innerText = "Publicando para todos...";
             icon.className = "fas fa-circle-notch loading-spin text-white text-xl";
 
             try {
                 const response = await fetch('/upload', { method: 'POST', body: formData });
-                
                 if (response.ok) {
-                    // Converter a imagem para Base64 para salvar no LocalStorage
-                    let photoBase64 = "";
-                    if (photoInput.files[0]) {
-                        photoBase64 = document.getElementById('previewTag').src;
-                    }
-
-                    const novoPack = {
-                        id: Date.now(),
-                        title: name,
-                        description: desc || "Premium Kit",
-                        image: photoBase64, // A foto agora é salva aqui!
-                        link: link || "#",
-                        type: fileInput.files[0] ? "ARQUIVO" : "LINK"
-                    };
-
-                    packs.unshift(novoPack);
-                    localStorage.setItem('kodaPacks', JSON.stringify(packs));
-                    render();
-                    
-                    status.innerText = "✅ Concluído!";
+                    status.innerText = "✅ PUBLICADO COM SUCESSO!";
+                    await fetchPacks(); // Atualiza a lista na hora
                     setTimeout(() => {
                         toggleModal(false);
                         document.querySelectorAll('.panel-input').forEach(i => i.value = "");
                         document.getElementById('imgPreview').classList.add('hidden');
-                        status.innerText = "Aguardando arquivos...";
+                        status.innerText = "Pronto para subir";
                     }, 1500);
+                } else {
+                    status.innerText = "❌ Erro no upload";
                 }
-            } catch (err) { status.innerText = "❌ Erro na conexão"; }
-            finally { icon.className = "fas fa-cloud-upload-alt text-white text-xl"; }
+            } catch (err) {
+                status.innerText = "❌ Falha de conexão";
+            } finally {
+                icon.className = "fas fa-cloud-upload-alt text-white text-xl";
+            }
         }
 
         function render() {
@@ -199,10 +187,10 @@
                     <div class="p-6 flex justify-between items-center bg-zinc-950">
                         <div class="truncate pr-4">
                             <h3 class="text-xl font-bold text-white truncate">${p.title}</h3>
-                            <p class="text-zinc-500 text-xs mb-2 truncate">${p.description}</p>
+                            <p class="text-zinc-500 text-xs mb-2 truncate">${p.description || 'Premium Collection'}</p>
                             <p class="text-purple-500 text-[9px] font-black tracking-widest uppercase">${p.type}</p>
                         </div>
-                        <a href="${p.link}" target="_blank" class="w-12 h-12 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-center text-purple-500 shadow-lg">
+                        <a href="${p.link}" target="_blank" class="w-12 h-12 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-center text-purple-500 shadow-lg active:scale-90 transition">
                             <i class="fas fa-download"></i>
                         </a>
                     </div>
@@ -211,7 +199,33 @@
             document.getElementById('packCounter').innerText = `${packs.length} Itens`;
         }
 
-        window.onload = render;
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('page-active'));
+            document.getElementById(`${pageId}Page`).classList.add('page-active');
+            const navHome = document.getElementById('navHome');
+            const navProfile = document.getElementById('navProfile');
+            if(pageId === 'home') {
+                navHome.className = 'flex flex-col items-center text-purple-500 cursor-pointer transition-all';
+                navProfile.className = 'flex flex-col items-center text-zinc-600 cursor-pointer transition-all';
+            } else {
+                navProfile.className = 'flex flex-col items-center text-purple-500 cursor-pointer transition-all';
+                navHome.className = 'flex flex-col items-center text-zinc-600 cursor-pointer transition-all';
+            }
+        }
+
+        function toggleModal(show) { document.getElementById('uploadModal').style.display = show ? 'flex' : 'none'; }
+
+        // Pesquisa em tempo real
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const termo = e.target.value.toLowerCase();
+            document.querySelectorAll('.card-main').forEach(card => {
+                const txt = card.querySelector('h3').innerText.toLowerCase();
+                card.style.display = txt.includes(termo) ? 'block' : 'none';
+            });
+        });
+
+        // Carrega os dados assim que o site abre
+        window.onload = fetchPacks;
     </script>
 </body>
 </html>
