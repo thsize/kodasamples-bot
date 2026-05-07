@@ -1,3 +1,10 @@
+
+# Salva (CTRL+O, ENTER) e sai (CTRL+X)
+
+# Comandos para forçar o envio
+git add .
+git commit -m "Unyv Records: Deploy definitivo"
+git push origin main
 # 1. Base oficial do Telegram Bot API
 FROM aiogram/telegram-bot-api:latest
 
@@ -21,3 +28,4 @@ EXPOSE 8081
 # 7. Comando para ligar a Local API e o teu Servidor Node
 CMD ["sh", "-c", "telegram-bot-api --local --api-id=${TELEGRAM_API_ID} --api-hash=${TELEGRAM_API_HASH} --http-port=8081 & node server.js"]
 
+t
