@@ -162,22 +162,6 @@
             overflow: hidden;
         }
 
-        .kit-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .kit-thumb {
             width: 100%;
             aspect-ratio: 1/1;
@@ -207,6 +191,29 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        /* --- SISTEMA DE DESTAQUE --- */
+        .highlights-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 16px;
+            scroll-snap-type: x mandatory;
+            padding: 0 32px;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .highlights-scroll::-webkit-scrollbar { display: none; }
+        
+        .highlight-card {
+            min-width: 100%;
+            scroll-snap-align: center;
+            position: relative;
+            height: 160px;
+            border-radius: 32px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+            flex-shrink: 0;
         }
 
         /* --- PAINEL DE UPLOAD (MODAL) --- */
@@ -269,8 +276,6 @@
             cursor: pointer;
         }
 
-        .select-btn i { font-size: 20px; display: block; margin-bottom: 8px; color: white; }
-
         .preview-img {
             width: 50px;
             height: 50px;
@@ -330,14 +335,6 @@
             font-size: 11px;
             z-index: 4000;
             display: none;
-            animation: fadeInOut 2s forwards;
-        }
-
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translate(-50%, -10px); }
-            15% { opacity: 1; transform: translate(-50%, 0); }
-            85% { opacity: 1; transform: translate(-50%, 0); }
-            100% { opacity: 0; transform: translate(-50%, -10px); }
         }
 
         ::-webkit-scrollbar { width: 0px; }
@@ -381,27 +378,15 @@
             <div class="marquee-content">
                 KodaSamples a casa dos produtores — Feito por thsize, parcerias Lopezs, se7e records — 
                 KodaSamples a casa dos produtores — Feito por thsize, parcerias Lopezs, se7e records — 
-                KodaSamples a casa dos produtores — Feito por thsize, parcerias Lopezs, se7e records — 
-                KodaSamples a casa dos produtores — Feito por thsize, parcerias Lopezs, se7e records — 
             </div>
         </div>
 
-        <section class="px-8 mb-10">
-            <div class="relative w-full h-40 rounded-[32px] overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-700 to-pink-600 border border-white/20 flex items-center p-8 shadow-2xl shadow-purple-500/20">
-                <div class="relative z-10">
-                    <span class="text-[9px] font-black bg-white text-black px-2 py-1 rounded mb-3 inline-block tracking-widest shadow-lg">DESTAQUE</span>
-                    <h3 class="text-xl font-black italic tracking-tighter uppercase text-white drop-shadow-md" style="font-family: 'Syncopate';">LO-FI SOUL<br>PACK</h3>
-                </div>
-                <div class="absolute right-[-20px] top-[-20px] opacity-20">
-                    <i class="fas fa-compact-disc text-[180px] animate-spin text-white" style="animation-duration: 15s;"></i>
-                </div>
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_black_140%)] opacity-30"></div>
-            </div>
+        <section class="mb-10">
+            <div id="highlightsContainer" class="highlights-scroll"></div>
         </section>
 
         <section class="px-8 pb-10">
-            <div id="kitsGrid" class="grid grid-cols-2 gap-4">
-                </div>
+            <div id="kitsGrid" class="grid grid-cols-2 gap-4"></div>
         </section>
     </main>
 
@@ -454,16 +439,13 @@
                 <h3 class="text-lg font-black italic" style="font-family: 'Syncopate';">UPAR PACK</h3>
                 <button onclick="document.getElementById('uploadModal').classList.remove('active')" class="text-white/30"><i class="fas fa-times text-xl"></i></button>
             </div>
-
             <input type="text" id="upName" class="panel-input" placeholder="NOME DO PACK">
-            <input type="text" id="upDesc" class="panel-input" placeholder="DESCRIÇÃO (EX: 20 LOOPS)">
+            <input type="text" id="upDesc" class="panel-input" placeholder="DESCRIÇÃO">
             <input type="text" id="upLink" class="panel-input" placeholder="LINK DE DOWNLOAD">
-
             <div class="upload-btn-box">
                 <div class="select-btn" onclick="document.getElementById('imgInput').click()">
                     <img id="pImg" class="preview-img">
-                    <i class="fas fa-camera" id="camIcon"></i>
-                    CAPA
+                    <i class="fas fa-camera" id="camIcon"></i> CAPA
                     <input type="file" id="imgInput" class="hidden" accept="image/*">
                 </div>
                 <div class="select-btn" onclick="document.getElementById('fileInput').click()">
@@ -472,7 +454,6 @@
                     <input type="file" id="fileInput" class="hidden">
                 </div>
             </div>
-
             <button onclick="startUpload()" class="w-full bg-white text-black py-5 rounded-2xl font-black text-xs uppercase tracking-widest active:scale-95 transition-transform">
                 Publicar no Site
             </button>
@@ -490,133 +471,102 @@
     </nav>
 
     <script>
-        let currentImgBase64 = null;
-
-        // BUSCA PACKS DO SERVIDOR AO ABRIR O SITE
         async function fetchPacks() {
             try {
-                const res = await fetch('/packs');
+                const res = await fetch('/packs?t=' + Date.now());
                 const packs = await res.json();
                 const grid = document.getElementById('kitsGrid');
+                const highlightContainer = document.getElementById('highlightsContainer');
+                
                 grid.innerHTML = ''; 
+                highlightContainer.innerHTML = '';
+
+                packs.slice(0, 5).forEach(p => addHighlight(p.title, p.link, p.image));
                 packs.forEach(p => addCardToSite(p.title, p.description, p.link, p.image));
-            } catch (e) { console.log("Erro ao carregar packs"); }
+            } catch (e) { console.log("Erro ao carregar"); }
         }
 
-        function enterApp() {
-            const name = document.getElementById('artistNameInput').value;
-            if(name) {
-                document.getElementById('displayArtistName').innerText = name;
-            }
-            document.getElementById('splashScreen').classList.add('hide');
-            document.body.style.overflow = 'auto';
-            document.getElementById('mascotVideo').play();
-            fetchPacks(); // Carrega os packs reais
-        }
-
-        function switchPage(page) {
-            const home = document.getElementById('homePage');
-            const profile = document.getElementById('profilePage');
-            const btnHome = document.getElementById('navHome');
-            const btnProfile = document.getElementById('navProfile');
-
-            if(page === 'home') {
-                home.classList.add('active');
-                profile.classList.remove('active');
-                btnHome.classList.add('active');
-                btnProfile.classList.remove('active');
-            } else {
-                home.classList.remove('active');
-                profile.classList.add('active');
-                btnHome.classList.remove('active');
-                btnProfile.classList.add('active');
-            }
-            window.scrollTo(0,0);
+        function addHighlight(name, link, img) {
+            const container = document.getElementById('highlightsContainer');
+            const card = document.createElement('div');
+            card.className = 'highlight-card';
+            card.onclick = () => window.open(link, '_blank');
+            const bg = img ? `url(${img})` : 'linear-gradient(to br, #4f46e5, #db2777)';
+            card.innerHTML = `
+                <div style="background: ${bg}; background-size: cover; background-position: center; width: 100%; height: 100%; opacity: 0.4; position: absolute; inset: 0;"></div>
+                <div class="relative z-10 p-8 h-full flex flex-col justify-center">
+                    <span class="text-[9px] font-black bg-white text-black px-2 py-1 rounded mb-3 inline-block w-fit tracking-widest uppercase">DESTAQUE</span>
+                    <h3 class="text-xl font-black italic uppercase text-white drop-shadow-md" style="font-family: 'Syncopate';">${name}</h3>
+                </div>
+            `;
+            container.appendChild(card);
         }
 
         function shareSite() {
             const siteUrl = window.location.href;
             const message = "🔥 Visite o nosso site de packs e samples exclusivos! Qualidade KodaSamples: " + siteUrl;
-            const textArea = document.createElement("textarea");
-            textArea.value = message;
-            document.body.appendChild(textArea);
-            textArea.select();
-            try {
-                document.execCommand('copy');
+            navigator.clipboard.writeText(message).then(() => {
                 const toast = document.getElementById('copyToast');
                 toast.style.display = 'block';
                 setTimeout(() => { toast.style.display = 'none'; }, 2000);
-            } catch (err) {}
-            document.body.removeChild(textArea);
+            });
+        }
+
+        function enterApp() {
+            const name = document.getElementById('artistNameInput').value;
+            if(name) document.getElementById('displayArtistName').innerText = name;
+            document.getElementById('splashScreen').classList.add('hide');
+            document.body.style.overflow = 'auto';
+            fetchPacks();
+        }
+
+        function switchPage(page) {
+            document.getElementById('homePage').classList.toggle('active', page === 'home');
+            document.getElementById('profilePage').classList.toggle('active', page === 'profile');
+            document.getElementById('navHome').classList.toggle('active', page === 'home');
+            document.getElementById('navProfile').classList.toggle('active', page === 'profile');
+            window.scrollTo(0,0);
         }
 
         document.getElementById('imgInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if(file) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    currentImgBase64 = event.target.result;
-                    const pImg = document.getElementById('pImg');
-                    pImg.src = currentImgBase64;
-                    pImg.style.display = 'block';
+                reader.onload = (ev) => {
+                    document.getElementById('pImg').src = ev.target.result;
+                    document.getElementById('pImg').style.display = 'block';
                     document.getElementById('camIcon').style.display = 'none';
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            if(e.target.files[0]) {
-                document.getElementById('fileLabel').innerText = e.target.files[0].name.substring(0, 10) + "...";
-                document.getElementById('fileIcon').classList.replace('fa-folder-open', 'fa-check-circle');
-                document.getElementById('fileIcon').classList.add('text-green-500');
-            }
-        });
-
-        // UPLOAD CONECTADO AO RENDER
         async function startUpload() {
             const name = document.getElementById('upName').value;
-            const desc = document.getElementById('upDesc').value;
             const link = document.getElementById('upLink').value;
-            const imgInput = document.getElementById('imgInput');
-            const fileInput = document.getElementById('fileInput');
-
-            if(!name || !link) {
-                alert("Preencha o nome e o link!");
-                return;
-            }
+            if(!name || !link) return alert("Preencha os campos!");
 
             const status = document.getElementById('uploadStatus');
-            const progVal = document.getElementById('progVal');
             status.style.display = 'block';
             document.getElementById('uploadModal').classList.remove('active');
 
             const fd = new FormData();
             fd.append('description', name);
-            fd.append('shortDesc', desc);
+            fd.append('shortDesc', document.getElementById('upDesc').value);
             fd.append('link', link);
-            if(imgInput.files[0]) fd.append('photo', imgInput.files[0]);
-            if(fileInput.files[0]) fd.append('file', fileInput.files[0]);
+            if(document.getElementById('imgInput').files[0]) fd.append('photo', document.getElementById('imgInput').files[0]);
 
             try {
                 const res = await fetch('/upload', { method: 'POST', body: fd });
                 if(res.ok) {
-                    let p = 0;
-                    const timer = setInterval(() => {
-                        p += 10;
-                        progVal.innerText = p + "%";
-                        if(p >= 100) {
-                            clearInterval(timer);
-                            status.style.display = 'none';
-                            fetchPacks(); // Recarrega a lista
-                            limparCampos();
-                        }
-                    }, 50);
+                    document.getElementById('progVal').innerText = "100%";
+                    setTimeout(() => {
+                        status.style.display = 'none';
+                        fetchPacks();
+                        limparCampos();
+                    }, 1000);
                 }
-            } catch (e) {
-                alert("Erro ao subir");
-                status.style.display = 'none';
-            }
+            } catch (e) { alert("Erro ao subir"); status.style.display = 'none'; }
         }
 
         function limparCampos() {
@@ -625,20 +575,13 @@
             document.getElementById('upLink').value = "";
             document.getElementById('pImg').style.display = 'none';
             document.getElementById('camIcon').style.display = 'block';
-            document.getElementById('fileLabel').innerText = "ARQUIVO";
-            document.getElementById('fileIcon').classList.replace('fa-check-circle', 'fa-folder-open');
-            document.getElementById('fileIcon').classList.remove('text-green-500');
-            currentImgBase64 = null;
         }
 
         function addCardToSite(name, desc, link, img) {
             const grid = document.getElementById('kitsGrid');
             const card = document.createElement('div');
             card.className = 'kit-card';
-            const colors = ['text-purple-500', 'text-blue-500', 'text-pink-500', 'text-indigo-500'];
-            const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            const thumb = img ? `<img src="${img}">` : `<i class="fas fa-compact-disc ${randomColor}/40 text-4xl"></i>`;
-            
+            const thumb = img ? `<img src="${img}">` : `<i class="fas fa-compact-disc text-white/20 text-4xl"></i>`;
             card.innerHTML = `
                 <div class="kit-thumb" onclick="window.open('${link}', '_blank')">
                     ${thumb}
@@ -649,12 +592,8 @@
             `;
             grid.prepend(card);
         }
-
-        window.onload = () => {
-            document.getElementById('mascotVideo').play().catch(() => {});
-        };
+        window.onload = () => { document.getElementById('mascotVideo').play().catch(()=>{}); };
     </script>
 </body>
 </html>
-
 
