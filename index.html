@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KodaSamples | Cloud Upload</title>
+    <style>
+        :root { --primary: #00ff88; --bg: #0a0a0a; }
+        body { background: var(--bg); color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .container { background: #151515; padding: 30px; border-radius: 15px; text-align: center; width: 90%; max-width: 400px; border: 1px solid #333; }
+        h1 { color: var(--primary); text-transform: uppercase; }
+        .upload-area { border: 2px dashed #333; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        input[type="file"] { display: none; }
+        label { background: #222; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: inline-block; }
+        button { background: var(--primary); color: black; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
+        #progress-container { width: 100%; background: #222; height: 10px; border-radius: 10px; margin-top: 20px; display: none; overflow: hidden; }
+        #progress-bar { width: 0%; height: 100%; background: var(--primary); transition: 0.1s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>KodaSamples</h1>
+        <div class="upload-area">
+            <label for="fileInput">ESCOLHER PACK</label>
+            <input type="file" id="fileInput">
+            <div id="fileName" style="margin-top:10px; font-size:12px; color:#888;">Nenhum arquivo</div>
+        </div>
+        <button onclick="uploadFile()">ENVIAR PARA O CLOUD</button>
+        <div id="progress-container"><div id="progress-bar"></div></div>
+        <div id="status" style="margin-top:15px; color:var(--primary);"></div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        fileInput.onchange = () => { document.getElementById('fileName').innerText = fileInput.files[0].name; };
+
+        function uploadFile() {
+            const file = fileInput.files[0];
+            if (!file) return alert("Selecione um arquivo!");
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const xhr = new XMLHttpRequest();
+            // IMPORTANTE: Agora usamos apenas '/upload' porque o site já está no servidor
+            xhr.open('POST', '/upload', true);
+
+            document.getElementById('progress-container').style.display = 'block';
+
+            xhr.upload.onprogress = (e) => {
+                const percent = (e.loaded / e.total) * 100;
+                document.getElementById('progress-bar').style.width = percent + '%';
+                document.getElementById('status').innerText = `Subindo: ${Math.round(percent)}%`;
+            };
+
+            xhr.onload = () => {
+                document.getElementById('status').innerText = xhr.status === 200 ? "✅ SUCESSO!" : "❌ ERRO!";
+            };
+            xhr.send(formData);
+        }
+    </script>
+</body>
+</html>
+
