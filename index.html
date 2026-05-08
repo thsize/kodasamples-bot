@@ -124,24 +124,26 @@
             opacity: 1;
         }
 
-               /* CATEGORIAS COM ESPAÇAMENTO AJUSTADO */
+        /* AJUSTE FINAL CATEGORIAS TRAVADAS */
         .categories-container {
             display: flex !important;
             overflow-x: auto !important;
+            overflow-y: hidden !important; /* Impede movimento vertical */
             gap: 12px;
             padding: 15px 32px;
-            margin-top: 15px; /* <--- ESSE ESPAÇO AQUI QUE FALTA */
+            margin-top: 10px;
             margin-bottom: 10px;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
-            z-index: 50;
+            touch-action: pan-x; /* Força o toque a ser apenas horizontal */
             position: relative;
+            z-index: 50;
         }
 
         .categories-container::-webkit-scrollbar { display: none; }
 
         .filter-btn {
-            flex-shrink: 0; /* Impede de esmagar no celular */
+            flex-shrink: 0;
             padding: 10px 20px;
             border-radius: 50px;
             background: rgba(255,255,255,0.03);
