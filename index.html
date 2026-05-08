@@ -124,23 +124,30 @@
             opacity: 1;
         }
 
-        /* AJUSTE FINAL CATEGORIAS - RESOLVIDO ESPAÇO VAZIO */
+                /* AJUSTE FINAL PARA NÃO FICAR ATRÁS DO BANNER */
         .categories-container {
             display: flex !important;
             overflow-x: auto !important;
             overflow-y: hidden !important;
             gap: 12px;
-            padding: 0px 32px 10px !important; /* Removido padding superior */
-            margin-top: -20px !important;       /* Puxa para cima eliminando o vácuo */
-            margin-bottom: 15px !important;
-            height: 50px !important;            /* Altura fixa para não criar buraco */
+            padding: 5px 32px !important; 
+            
+            /* Diminuí de -20 para -8 para ela descer um pouco e aparecer */
+            margin-top: -8px !important; 
+            margin-bottom: 10px !important;
+            
+            height: 45px !important;
             align-items: center;
+            
+            /* Z-INDEX ALTO PARA FICAR NA FRENTE DE TUDO */
+            z-index: 100 !important; 
+            position: relative;
+            
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
             touch-action: pan-x;
-            position: relative;
-            z-index: 50;
         }
+
 
         .categories-container::-webkit-scrollbar { display: none; }
 
