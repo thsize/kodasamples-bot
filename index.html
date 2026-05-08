@@ -124,18 +124,20 @@
             opacity: 1;
         }
 
-        /* AJUSTE FINAL CATEGORIAS TRAVADAS */
+        /* AJUSTE FINAL CATEGORIAS - RESOLVIDO ESPAÇO VAZIO */
         .categories-container {
             display: flex !important;
             overflow-x: auto !important;
-            overflow-y: hidden !important; /* Impede movimento vertical */
+            overflow-y: hidden !important;
             gap: 12px;
-            padding: 15px 32px;
-            margin-top: -30px;
-            margin-bottom: 10px;
+            padding: 0px 32px 10px !important; /* Removido padding superior */
+            margin-top: -20px !important;       /* Puxa para cima eliminando o vácuo */
+            margin-bottom: 15px !important;
+            height: 50px !important;            /* Altura fixa para não criar buraco */
+            align-items: center;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
-            touch-action: pan-x; /* Força o toque a ser apenas horizontal */
+            touch-action: pan-x;
             position: relative;
             z-index: 50;
         }
@@ -210,7 +212,7 @@
             overflow-x: auto;
             gap: 16px;
             scroll-snap-type: x mandatory;
-            padding: 10px 32px 25px;
+            padding: 10px 32px 10px; /* Reduzido padding inferior */
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
@@ -380,7 +382,7 @@
             </div>
         </header>
 
-        <section class="mt-2 mb-2">
+        <section class="mt-2 mb-0">
             <div id="highlightsContainer" class="highlights-scroll"></div>
         </section>
 
