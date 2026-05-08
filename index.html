@@ -125,19 +125,19 @@
         }
 
                 /* AJUSTE FINAL PARA NÃO FICAR ATRÁS DO BANNER */
-                .categories-container {
+              .categories-container {
             display: flex !important;
             overflow-x: auto !important;
             overflow-y: hidden !important;
             gap: 12px;
             padding: 0 32px !important;
             
-            /* Ajuste de margem para parar de sumir */
-            margin-top: 12px !important; 
-            margin-bottom: 15px !important;
+            margin-top: 15px !important;
+            /* Aumente o margin-bottom para os cards não encostarem */
+            margin-bottom: 25px !important; 
             
-            /* Altura ideal para os botões aparecerem inteiros */
-            height: 55px !important;
+            /* Trave a altura para não achatar */
+            height: 60px !important; 
             
             align-items: center;
             z-index: 100 !important;
@@ -147,6 +147,7 @@
             scrollbar-width: none;
             touch-action: pan-x;
         }
+
  
 
 
