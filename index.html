@@ -125,28 +125,33 @@
         }
 
                 /* AJUSTE FINAL PARA NÃO FICAR ATRÁS DO BANNER */
-              .categories-container {
+          .categories-container {
             display: flex !important;
             overflow-x: auto !important;
             overflow-y: hidden !important;
             gap: 12px;
-            padding: 0 32px !important;
+            padding: 5px 32px !important;
             
+            /* Trava a barra para ela não ser esmagada pelos cards */
+            flex-shrink: 0 !important;
+            
+            /* Garante que ela apareça no mobile */
             margin-top: 15px !important;
-            /* Aumente o margin-bottom para os cards não encostarem */
-            margin-bottom: 25px !important; 
+            margin-bottom: 20px !important;
             
-            /* Trave a altura para não achatar */
-            height: 60px !important; 
+            /* Altura fixa para não sumir */
+            min-height: 55px !important;
+            height: 55px !important;
             
             align-items: center;
             z-index: 100 !important;
             position: relative;
             
+            /* Melhor scroll no toque do celular */
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
-            touch-action: pan-x;
         }
+
 
  
 
