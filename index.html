@@ -124,32 +124,24 @@
             opacity: 1;
         }
 
-        /* Letreiro LED Corrigido */
-        .led-marquee {
-            width: 100%;
-            background: #000;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding: 14px 0;
-            overflow: hidden;
-            white-space: nowrap;
-            position: relative;
-            z-index: 20;
-        }
-
-        .marquee-content {
-            display: inline-block;
-            animation: marquee 30s linear infinite;
-            font-size: 9px;
-            font-weight: 900;
-            letter-spacing: 3px;
-            color: rgba(255,255,255,0.8);
+        /* CATEGORIAS DESIGN */
+        .filter-btn {
+            padding: 10px 20px;
+            border-radius: 50px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            font-size: 10px;
+            font-weight: 800;
             text-transform: uppercase;
+            white-space: nowrap;
+            transition: all 0.3s;
+            color: rgba(255,255,255,0.4);
+            letter-spacing: 1px;
         }
-
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+        .filter-btn.active {
+            background: white;
+            color: black;
+            border-color: white;
         }
 
         /* CARDS COLORIDOS */
@@ -247,7 +239,7 @@
             to { transform: translateY(0); }
         }
 
-        .panel-input {
+        .panel-input, .panel-select {
             width: 100%;
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.08);
@@ -258,6 +250,8 @@
             margin-bottom: 15px;
             outline: none;
         }
+
+        .panel-select { appearance: none; }
 
         .upload-btn-box {
             display: flex;
@@ -368,14 +362,15 @@
             </div>
         </header>
 
-        <div class="led-marquee">
-            <div class="marquee-content">
-                KodaSamples a casa dos produtores — Feito por thsize, parcerias Lopezs, se7e records — 
-                KodaSamples a casa dos produtores — Feito por thsize, parcerias Lopezs, se7e records — 
-            </div>
-        </div>
+        <section class="flex gap-3 px-8 mb-6 overflow-x-auto no-scrollbar">
+            <button onclick="filterCategory('all')" class="filter-btn active" data-cat="all">Todos</button>
+            <button onclick="filterCategory('samples')" class="filter-btn" data-cat="samples">Samples</button>
+            <button onclick="filterCategory('melodias')" class="filter-btn" data-cat="melodias">Melodias</button>
+            <button onclick="filterCategory('drumkit')" class="filter-btn" data-cat="drumkit">Drumkits</button>
+            <button onclick="filterCategory('acapella')" class="filter-btn" data-cat="acapella">Acapellas</button>
+        </section>
 
-        <section class="mt-6 mb-2">
+        <section class="mt-2 mb-2">
             <div id="highlightsContainer" class="highlights-scroll"></div>
         </section>
 
@@ -385,7 +380,7 @@
     </main>
 
     <main id="profilePage" class="page-container">
-        <section class="profile-hero">
+        <section class="profile-hero text-center pt-10">
             <div class="relative w-32 h-32 mx-auto mb-6">
                 <div class="w-full h-full rounded-full bg-zinc-900 border-4 border-white/5 flex items-center justify-center overflow-hidden">
                     <i class="fas fa-user text-4xl text-white/10"></i>
@@ -398,9 +393,9 @@
             <p class="text-[10px] text-white/30 font-bold tracking-[0.3em] mt-2">VERIFIED KODA ARTIST</p>
         </section>
 
-        <section class="px-8 space-y-4">
+        <section class="px-8 space-y-4 mt-10">
             <div class="bg-zinc-900/30 rounded-[32px] border border-white/5 p-6 flex items-center gap-4 active:scale-95 transition-transform" onclick="window.open('https://instagram.com/kodasamples', '_blank')">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 flex items-center justify-center shadow-lg shadow-pink-500/10">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 flex items-center justify-center">
                     <i class="fab fa-instagram text-2xl text-white"></i>
                 </div>
                 <div>
@@ -434,18 +429,22 @@
                 <button onclick="document.getElementById('uploadModal').classList.remove('active')" class="text-white/30"><i class="fas fa-times text-xl"></i></button>
             </div>
             <input type="text" id="upName" class="panel-input" placeholder="NOME DO PACK">
+            
+            <select id="upCategory" class="panel-select">
+                <option value="samples" selected>SAMPLES (DRUMS/FX)</option>
+                <option value="melodias">MELODIAS/LOOPS</option>
+                <option value="drumkit">DRUMKIT</option>
+                <option value="acapella">ACAPELLA</option>
+            </select>
+
             <input type="text" id="upDesc" class="panel-input" placeholder="DESCRIÇÃO (EX: PREMIUM PACK)">
             <input type="text" id="upLink" class="panel-input" placeholder="LINK DE DOWNLOAD">
+            
             <div class="upload-btn-box">
                 <div class="select-btn" onclick="document.getElementById('imgInput').click()">
                     <img id="pImg" class="preview-img">
                     <i class="fas fa-camera" id="camIcon"></i> CAPA
                     <input type="file" id="imgInput" class="hidden" accept="image/*">
-                </div>
-                <div class="select-btn" onclick="document.getElementById('fileInput').click()">
-                    <i class="fas fa-folder-open" id="fileIcon"></i>
-                    <span id="fileLabel">ARQUIVO</span>
-                    <input type="file" id="fileInput" class="hidden">
                 </div>
             </div>
             <button onclick="startUpload()" class="w-full bg-white text-black py-5 rounded-2xl font-black text-xs uppercase tracking-widest active:scale-95 transition-transform">
@@ -476,8 +475,23 @@
                 highlightContainer.innerHTML = '';
 
                 packs.slice(0, 5).forEach(p => addHighlight(p.title, p.link, p.image));
-                packs.forEach(p => addCardToSite(p.title, p.description, p.link, p.image));
+                packs.forEach(p => addCardToSite(p.title, p.description, p.link, p.image, p.category));
             } catch (e) { console.log("Erro ao carregar"); }
+        }
+
+        function filterCategory(cat) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-cat') === cat);
+            });
+
+            const cards = document.querySelectorAll('.kit-card');
+            cards.forEach(card => {
+                if (cat === 'all') {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = (card.getAttribute('data-category') === cat) ? 'block' : 'none';
+                }
+            });
         }
 
         function addHighlight(name, link, img) {
@@ -495,9 +509,6 @@
                         <span class="text-[8px] font-black border border-white/20 text-white/60 px-2 py-1 rounded tracking-widest uppercase">NEW RELEASE</span>
                     </div>
                     <h3 class="text-2xl font-black italic uppercase text-white drop-shadow-2xl" style="font-family: 'Syncopate'; letter-spacing: -1px;">${name}</h3>
-                </div>
-                <div class="absolute right-[-30px] bottom-[-30px] opacity-10">
-                    <i class="fas fa-compact-disc text-[200px] animate-spin text-white" style="animation-duration: 20s;"></i>
                 </div>
             `;
             container.appendChild(card);
@@ -545,6 +556,8 @@
         async function startUpload() {
             const name = document.getElementById('upName').value;
             const link = document.getElementById('upLink').value;
+            const category = document.getElementById('upCategory').value;
+
             if(!name || !link) return alert("Preencha os campos!");
 
             const status = document.getElementById('uploadStatus');
@@ -555,6 +568,8 @@
             fd.append('description', name);
             fd.append('shortDesc', document.getElementById('upDesc').value || 'PREMIUM PACK');
             fd.append('link', link);
+            fd.append('category', category);
+
             if(document.getElementById('imgInput').files[0]) fd.append('photo', document.getElementById('imgInput').files[0]);
 
             try {
@@ -578,10 +593,11 @@
             document.getElementById('camIcon').style.display = 'block';
         }
 
-        function addCardToSite(name, desc, link, img) {
+        function addCardToSite(name, desc, link, img, cat) {
             const grid = document.getElementById('kitsGrid');
             const card = document.createElement('div');
             card.className = 'kit-card';
+            card.setAttribute('data-category', cat || 'samples');
             const thumb = img ? `<img src="${img}">` : `<i class="fas fa-compact-disc text-white/10 text-4xl"></i>`;
             card.innerHTML = `
                 <div class="kit-thumb" onclick="window.open('${link}', '_blank')">
@@ -589,7 +605,7 @@
                     <div class="download-badge"><i class="fas fa-arrow-down text-[12px]"></i></div>
                 </div>
                 <h5 class="text-[10px] font-black tracking-wider uppercase truncate">${name}</h5>
-                <p class="text-[9px] text-white/30 font-bold uppercase mt-1">${desc || 'PREMIUM PACK'}</p>
+                <p class="text-[9px] text-blue-500 font-bold uppercase mt-1">${cat || 'SAMPLES'}</p>
             `;
             grid.prepend(card);
         }
