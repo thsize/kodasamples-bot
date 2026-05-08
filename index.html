@@ -124,15 +124,20 @@
             opacity: 1;
         }
 
-        /* AJUSTE CATEGORIAS MOBILE */
+               /* CATEGORIAS COM ESPAÇAMENTO AJUSTADO */
         .categories-container {
             display: flex !important;
             overflow-x: auto !important;
             gap: 12px;
             padding: 15px 32px;
+            margin-top: 15px; /* <--- ESSE ESPAÇO AQUI QUE FALTA */
+            margin-bottom: 10px;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
+            z-index: 50;
+            position: relative;
         }
+
         .categories-container::-webkit-scrollbar { display: none; }
 
         .filter-btn {
