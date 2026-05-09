@@ -450,8 +450,9 @@
                 <i class="fas fa-copy ml-auto text-white/20 text-xs"></i>
             </div>
 
-            <button onclick="location.reload()" class="w-full bg-red-500/10 text-red-500 py-5 rounded-[24px] font-black text-[10px] uppercase tracking-[0.2em] border border-red-500/20 active:scale-95 transition-all mt-8">
-                Sair do Estúdio
+            <button onclick="localStorage.clear(); location.reload();" class="w-full bg-red-500/10 text-red-500 py-5 rounded-[24px] font-black text-[10px] uppercase tracking-[0.2em] border border-red-500/20 active:scale-95 transition-all mt-8">
+    Sair do Estúdio
+</button>
             </button>
         </section>
     </main>
@@ -559,12 +560,15 @@
         }
 
         function enterApp() {
-            const name = document.getElementById('artistNameInput').value;
-            if(name) document.getElementById('displayArtistName').innerText = name;
-            document.getElementById('splashScreen').classList.add('hide');
-            document.body.style.overflow = 'auto';
-            fetchPacks();
-        }
+    const name = document.getElementById('artistNameInput').value;
+    if(name) {
+        // Salva no celular do usuário
+        localStorage.setItem('koda_user_name', name);
+        document.getElementById('displayArtistName').innerText = name;
+        document.getElementById('splashScreen').classList.add('hide');
+        document.body.style.overflow = 'auto';
+        fetchPacks();
+    }
 
         function switchPage(page) {
             document.getElementById('homePage').classList.toggle('active', page === 'home');
@@ -643,7 +647,18 @@
             `;
             grid.prepend(card);
         }
-        window.onload = () => { document.getElementById('mascotVideo').play().catch(()=>{}); };
+        window.onload = () => {
+    // Verifica se o usuário já logou antes
+    const savedName = localStorage.getItem('koda_user_name');
+    if(savedName) {
+        document.getElementById('displayArtistName').innerText = savedName;
+        document.getElementById('splashScreen').classList.add('hide');
+        document.body.style.overflow = 'auto';
+        fetchPacks();
+    }
+    document.getElementById('mascotVideo').play().catch(()=>{});
+};
+
     </script>
 </body>
 </html>
