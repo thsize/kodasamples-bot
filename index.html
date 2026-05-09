@@ -124,37 +124,23 @@
             opacity: 1;
         }
 
-                /* AJUSTE FINAL PARA NÃO FICAR ATRÁS DO BANNER */
-          .categories-container {
+        .categories-container {
             display: flex !important;
             overflow-x: auto !important;
             overflow-y: hidden !important;
             gap: 12px;
             padding: 5px 32px !important;
-            
-            /* Trava a barra para ela não ser esmagada pelos cards */
             flex-shrink: 0 !important;
-            
-            /* Garante que ela apareça no mobile */
             margin-top: 15px !important;
             margin-bottom: 20px !important;
-            
-            /* Altura fixa para não sumir */
             min-height: 55px !important;
             height: 55px !important;
-            
             align-items: center;
             z-index: 100 !important;
             position: relative;
-            
-            /* Melhor scroll no toque do celular */
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
         }
-
-
- 
-
 
         .categories-container::-webkit-scrollbar { display: none; }
 
@@ -178,7 +164,7 @@
             border-color: white;
         }
 
-        /* CARDS COLORIDOS */
+        /* CARDS */
         .kit-card {
             background: linear-gradient(145deg, #121212 0%, #050505 100%);
             border-radius: 32px;
@@ -220,13 +206,12 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
-        /* --- SISTEMA DE DESTAQUE --- */
         .highlights-scroll {
             display: flex;
             overflow-x: auto;
             gap: 16px;
             scroll-snap-type: x mandatory;
-            padding: 10px 32px 10px; /* Reduzido padding inferior */
+            padding: 10px 32px 10px;
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
@@ -244,7 +229,6 @@
             background: #0a0a0a;
         }
 
-        /* --- PAINEL DE UPLOAD (MODAL) --- */
         #uploadModal {
             position: fixed;
             inset: 0;
@@ -285,8 +269,6 @@
             outline: none;
         }
 
-        .panel-select { appearance: none; }
-
         .upload-btn-box {
             display: flex;
             gap: 10px;
@@ -315,7 +297,6 @@
             display: none;
         }
 
-        /* Navegação */
         .nav-container {
             background: rgba(10, 10, 10, 0.85);
             backdrop-filter: blur(30px);
@@ -409,8 +390,8 @@
         </section>
 
         <section class="px-8 pt-6 pb-10"> 
-    <div id="kitsGrid" class="grid grid-cols-2 gap-4"></div>
-</section>
+            <div id="kitsGrid" class="grid grid-cols-2 gap-4"></div>
+        </section>
     </main>
 
     <main id="profilePage" class="page-container">
@@ -451,8 +432,7 @@
             </div>
 
             <button onclick="localStorage.clear(); location.reload();" class="w-full bg-red-500/10 text-red-500 py-5 rounded-[24px] font-black text-[10px] uppercase tracking-[0.2em] border border-red-500/20 active:scale-95 transition-all mt-8">
-    Sair do Estúdio
-</button>
+                Sair do Estúdio
             </button>
         </section>
     </main>
@@ -531,6 +511,7 @@
 
         function addHighlight(name, link, img) {
             const container = document.getElementById('highlightsContainer');
+            if(!container) return;
             const card = document.createElement('div');
             card.className = 'highlight-card';
             card.onclick = () => window.open(link, '_blank');
@@ -560,22 +541,22 @@
         }
 
         function enterApp() {
-    const nameInput = document.getElementById('artistNameInput');
-    const name = nameInput.value;
-    
-    if(name.trim() !== "") { // O .trim() evita que entre só com espaços
-        localStorage.setItem('koda_user_name', name);
-        document.getElementById('displayArtistName').innerText = name;
-        
-        // Garante que a splash screen suma
-        const splash = document.getElementById('splashScreen');
-        splash.classList.add('hide');
-        
-        document.body.style.overflow = 'auto';
-        fetchPacks();
-    } else {
-        alert("Digita teu nome de artista!");
-    }
+            const nameInput = document.getElementById('artistNameInput');
+            const name = nameInput.value;
+            
+            if(name.trim() !== "") {
+                localStorage.setItem('koda_user_name', name);
+                document.getElementById('displayArtistName').innerText = name;
+                
+                const splash = document.getElementById('splashScreen');
+                splash.classList.add('hide');
+                
+                document.body.style.overflow = 'auto';
+                fetchPacks();
+            } else {
+                alert("Digita teu nome de artista!");
+            }
+        }
 
         function switchPage(page) {
             document.getElementById('homePage').classList.toggle('active', page === 'home');
@@ -640,6 +621,7 @@
 
         function addCardToSite(name, desc, link, img, cat) {
             const grid = document.getElementById('kitsGrid');
+            if(!grid) return;
             const card = document.createElement('div');
             card.className = 'kit-card';
             card.setAttribute('data-category', cat || 'samples');
@@ -654,17 +636,17 @@
             `;
             grid.prepend(card);
         }
-        window.onload = () => {
-    // Verifica se o usuário já logou antes
-    const savedName = localStorage.getItem('koda_user_name');
-    if(savedName) {
-        document.getElementById('displayArtistName').innerText = savedName;
-        document.getElementById('splashScreen').classList.add('hide');
-        document.body.style.overflow = 'auto';
-        fetchPacks();
-    }
-    document.getElementById('mascotVideo').play().catch(()=>{});
 
+        window.onload = () => {
+            const savedName = localStorage.getItem('koda_user_name');
+            if(savedName) {
+                document.getElementById('displayArtistName').innerText = savedName;
+                document.getElementById('splashScreen').classList.add('hide');
+                document.body.style.overflow = 'auto';
+                fetchPacks();
+            }
+            document.getElementById('mascotVideo').play().catch(()=>{});
+        };
     </script>
 </body>
 </html>
