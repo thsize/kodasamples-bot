@@ -560,14 +560,21 @@
         }
 
         function enterApp() {
-    const name = document.getElementById('artistNameInput').value;
-    if(name) {
-        // Salva no celular do usuário
+    const nameInput = document.getElementById('artistNameInput');
+    const name = nameInput.value;
+    
+    if(name.trim() !== "") { // O .trim() evita que entre só com espaços
         localStorage.setItem('koda_user_name', name);
         document.getElementById('displayArtistName').innerText = name;
-        document.getElementById('splashScreen').classList.add('hide');
+        
+        // Garante que a splash screen suma
+        const splash = document.getElementById('splashScreen');
+        splash.classList.add('hide');
+        
         document.body.style.overflow = 'auto';
         fetchPacks();
+    } else {
+        alert("Digita teu nome de artista!");
     }
 
         function switchPage(page) {
@@ -657,7 +664,6 @@
         fetchPacks();
     }
     document.getElementById('mascotVideo').play().catch(()=>{});
-};
 
     </script>
 </body>
