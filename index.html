@@ -500,19 +500,26 @@
         }
 
         function filterCategory(cat) {
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('data-cat') === cat);
-            });
+    // 1. Atualiza os botões
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-cat') === cat);
+    });
 
-            const cards = document.querySelectorAll('.kit-card');
-            cards.forEach(card => {
-                if (cat === 'all') {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = (card.getAttribute('data-category') === cat) ? 'block' : 'none';
-                }
-            });
+    // 2. Filtra os cards usando a classe 'hidden' do Tailwind
+    const cards = document.querySelectorAll('.kit-card');
+    cards.forEach(card => {
+        const cardCat = card.getAttribute('data-category');
+        
+        if (cat === 'all' || cardCat === cat) {
+            // Remove a classe que esconde o card
+            card.classList.remove('hidden');
+        } else {
+            // Adiciona a classe que esconde o card
+            card.classList.add('hidden');
         }
+    });
+}
+
 
         function addHighlight(name, link, img) {
             const container = document.getElementById('highlightsContainer');
