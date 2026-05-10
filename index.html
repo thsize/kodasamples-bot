@@ -174,19 +174,19 @@
     box-sizing: border-box;
 }
 
-/* 2. O CARD: Visual premium e trava de tamanho */
 .kit-card {
     background: linear-gradient(145deg, #121212 0%, #050505 100%);
     border-radius: 32px;
     padding: 16px;
     border: 1px solid rgba(255, 255, 255, 0.05);
-    animation: fadeIn 0.5s ease backwards;
-    position: relative;
-    overflow: hidden;
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
     box-sizing: border-box;
+}
+
+.kit-card.hidden {
+    display: none !important;
 }
 
 /* 3. A THUMB: Onde fica a capa do pack */
@@ -654,21 +654,51 @@
         }
 
         function addCardToSite(name, desc, link, img, cat) {
-            const grid = document.getElementById('kitsGrid');
-            const card = document.createElement('div');
-            card.className = 'kit-card';
-            card.setAttribute('data-category', cat || 'samples');
-            const thumb = img ? `<img src="${img}">` : `<i class="fas fa-compact-disc text-white/10 text-4xl"></i>`;
-            card.innerHTML = `
-                <div class="kit-thumb" onclick="window.open('${link}', '_blank')">
-                    ${thumb}
-                    <div class="download-badge"><i class="fas fa-arrow-down text-[12px]"></i></div>
-                </div>
-                <h5 class="text-[10px] font-black tracking-wider uppercase truncate">${name}</h5>
-                <p class="text-[9px] text-blue-500 font-bold uppercase mt-1">${cat || 'SAMPLES'}</p>
-            `;
-            grid.prepend(card);
+    const grid = document.getElementById('kitsGrid');
+    if (!grid) return;
+
+    const card = document.createElement('div');
+    card.className = 'kit-card';
+    
+    const category = (cat || 'samples').toLowerCase().trim();
+    card.setAttribute('data-category', category);
+
+    const thumb = img 
+        ? `<img src="${img}" style="width:100%; height:100%; object-fit:cover;">` 
+        : `<i class="fas fa-compact-disc text-white/10 text-4xl"></i>`;
+
+    card.innerHTML = `
+        <div class="kit-thumb" onclick="window.open('${link}', '_blank')">
+            ${thumb}
+            <div class="download-badge"><i class="fas fa-arrow-down text-[12px]"></i></div>
+        </div>
+        <div style="margin-top: 8px;">
+            <h5 class="text-[10px] font-black tracking-wider uppercase truncate" style="color: white;">${name}</h5>
+            <p class="text-[9px] text-blue-500 font-bold uppercase mt-1">${category}</p>
+        </div>
+    `;
+
+    grid.prepend(card);
+}
+
+function filterCategory(cat) {
+    const target = cat.toLowerCase().trim();
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        const btnCat = btn.getAttribute('data-cat').toLowerCase().trim();
+        btn.classList.toggle('active', btnCat === target);
+    });
+
+    document.querySelectorAll('.kit-card').forEach(card => {
+        const cardCat = (card.getAttribute('data-category') || '').toLowerCase().trim();
+        if (target === 'all' || cardCat === target) {
+            card.classList.remove('hidden');
+        } else {
+            card.classList.add('hidden');
         }
+    });
+}
+
         window.onload = () => {
     // Tenta dar play no vídeo
     document.getElementById('mascotVideo').play().catch(()=>{});
