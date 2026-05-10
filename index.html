@@ -34,6 +34,7 @@
             justify-content: center;
             transition: all 1s cubic-bezier(0.8, 0, 0.2, 1);
             overflow: hidden;
+            touch-action: none;
         }
 
         #splashScreen.hide {
@@ -127,25 +128,22 @@
         .categories-container {
             display: flex !important;
             overflow-x: auto !important;
-            overflow-y: hidden !important;
+            overflow-y: hidden !important; 
             gap: 12px;
-            padding: 5px 32px !important;
-            flex-shrink: 0 !important;
-            margin-top: 15px !important;
-            margin-bottom: 20px !important;
-            min-height: 55px !important;
-            height: 55px !important;
-            align-items: center;
-            z-index: 100 !important;
-            position: relative;
+            padding: 10px 32px;
+            margin-top: 10px; 
+            margin-bottom: 10px;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
+            touch-action: pan-x; 
+            position: relative;
+            z-index: 50;
         }
 
         .categories-container::-webkit-scrollbar { display: none; }
 
         .filter-btn {
-            flex-shrink: 0;
+            flex-shrink: 0; 
             padding: 10px 20px;
             border-radius: 50px;
             background: rgba(255,255,255,0.03);
@@ -164,7 +162,6 @@
             border-color: white;
         }
 
-        /* CARDS */
         .kit-card {
             background: linear-gradient(145deg, #121212 0%, #050505 100%);
             border-radius: 32px;
@@ -211,7 +208,7 @@
             overflow-x: auto;
             gap: 16px;
             scroll-snap-type: x mandatory;
-            padding: 10px 32px 10px;
+            padding: 10px 32px 25px;
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
@@ -268,6 +265,8 @@
             margin-bottom: 15px;
             outline: none;
         }
+
+        .panel-select { appearance: none; }
 
         .upload-btn-box {
             display: flex;
@@ -350,46 +349,40 @@
 
     <div id="splashScreen">
         <div class="overlay-content">
-    <div class="text-center mb-2">
-        <h2 class="text-4xl font-black italic tracking-tighter" style="font-family: 'Syncopate';">KODASAMPLES</h2>
-        <p class="text-[10px] text-white/50 font-bold tracking-[0.4em] mt-3 uppercase px-10">A CASA DOS PRODUTORES</p>
+            <div class="text-center mb-2">
+                <h2 class="text-4xl font-black italic tracking-tighter" style="font-family: 'Syncopate';">KODASAMPLES</h2>
+                <p class="text-[10px] text-white/50 font-bold tracking-[0.4em] mt-3 uppercase px-10">A CASA DOS PRODUTORES</p>
+            </div>
+            <div class="w-full flex flex-col items-center px-6">
+                <input type="text" id="artistNameInput" class="artist-input" placeholder="TEU NOME DE ARTISTA">
+                <button onclick="enterApp()" class="enter-btn">Iniciar Estúdio</button>
+            </div>
+        </div>
 
-        <div class="flex flex-col items-center gap-4 mt-6">
-            <img src="URL_DA_SUA_IMAGEM_1" class="w-16 h-auto" alt="Polaris">
-    </div>
-
-    <div class="w-full flex flex-col items-center px-6 mt-4">
-        <input type="text" id="artistNameInput" class="artist-input" placeholder="TEU NOME DE ARTISTA">
-        <button onclick="enterApp()" class="enter-btn">Iniciar Estúdio</button>
-    </div>
-</div>
+        <div style="position: absolute; bottom: -49px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 15px; z-index: 20; pointer-events: none;">
+            <img src="https://i.ibb.co/b5YsCCss/Novo-projeto-24-34-FE056.png" class="w-24 h-auto" alt="Polaris">
+            <img src="https://i.postimg.cc/L6P2m9z6/Novo-projeto-27-E3F175F.png" style="width: 160px; height: auto; opacity:" alt="Parcerias">
+        </div>
 
         <div class="video-background-container">
             <video id="mascotVideo" class="mascot-video" autoplay loop muted playsinline>
                 <source src="https://www.dropbox.com/scl/fi/aoyn4sg77baz8kw2as0ry/lv_0_20260507165613.mp4?rlkey=t0vjqnw3u6t7oprvbcyv6vg1o&st=sxv6qzc6&raw=1" type="video/mp4">
-                       </video>
+            </video>
         </div>
-
-        <div style="position: absolute; bottom: 30px; left: 0; right: 0; display: flex; justify-content: center; z-index: 100; pointer-events: none;">
-            <img src="https://i.postimg.cc/L6P2m9z6/Novo-projeto-27-E3F175F.png" style="width: 160px; height: auto; opacity: 0.6;">
-        </div>
-
     </div>
 
-
     <main id="homePage" class="page-container active">
-                <header class="p-8 pb-4 flex justify-between items-end">
+        <header class="p-8 pb-4 flex justify-between items-end">
             <div>
                 <p class="text-[11px] font-black text-white/40 tracking-[0.4em] uppercase mb-1">BEM-VINDO AO</p>
                 <h2 class="text-xl font-black italic uppercase" style="font-family: 'Syncopate';">KODASAMPLES</h2>
             </div>
             <div class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center bg-zinc-950 overflow-hidden">
-                <img src="https://i.ibb.co/68032n2v/1778333989394.jpeg" alt="Logo Koda" class="w-full h-full object-contain p-1">
-            </div>
+    <img src="https://i.postimg.cc/m2zsPH01/Novo-projeto-23-456C32D.png" class="w-full h-full object-cover" alt="Logo">
+</div>
         </header>
 
-
-        <section class="mt-2 mb-0">
+        <section class="mt-2 mb-2">
             <div id="highlightsContainer" class="highlights-scroll"></div>
         </section>
 
@@ -401,7 +394,7 @@
             <button onclick="filterCategory('acapella')" class="filter-btn" data-cat="acapella">Acapellas</button>
         </section>
 
-        <section class="px-8 pt-6 pb-10"> 
+        <section class="px-8 pb-10">
             <div id="kitsGrid" class="grid grid-cols-2 gap-4"></div>
         </section>
     </main>
@@ -427,7 +420,7 @@
                 </div>
                 <div>
                     <h4 class="text-[11px] font-black uppercase tracking-wider">Instagram Oficial</h4>
-                    <p class="text-[10px] text-white/50 font-bold tracking-widest">@polaris..studio</p>
+                    <p class="text-[10px] text-white/50 font-bold tracking-widest">@kodasamples</p>
                 </div>
                 <i class="fas fa-external-link-alt ml-auto text-white/20 text-xs"></i>
             </div>
@@ -443,7 +436,7 @@
                 <i class="fas fa-copy ml-auto text-white/20 text-xs"></i>
             </div>
 
-            <button onclick="localStorage.clear(); location.reload();" class="w-full bg-red-500/10 text-red-500 py-5 rounded-[24px] font-black text-[10px] uppercase tracking-[0.2em] border border-red-500/20 active:scale-95 transition-all mt-8">
+            <button onclick="location.reload()" class="w-full bg-red-500/10 text-red-500 py-5 rounded-[24px] font-black text-[10px] uppercase tracking-[0.2em] border border-red-500/20 active:scale-95 transition-all mt-8">
                 Sair do Estúdio
             </button>
         </section>
@@ -523,7 +516,6 @@
 
         function addHighlight(name, link, img) {
             const container = document.getElementById('highlightsContainer');
-            if(!container) return;
             const card = document.createElement('div');
             card.className = 'highlight-card';
             card.onclick = () => window.open(link, '_blank');
@@ -553,22 +545,16 @@
         }
 
         function enterApp() {
-            const nameInput = document.getElementById('artistNameInput');
-            const name = nameInput.value;
-            
-            if(name.trim() !== "") {
-                localStorage.setItem('koda_user_name', name);
-                document.getElementById('displayArtistName').innerText = name;
-                
-                const splash = document.getElementById('splashScreen');
-                splash.classList.add('hide');
-                
-                document.body.style.overflow = 'auto';
-                fetchPacks();
-            } else {
-                alert("Digita teu nome de artista!");
-            }
-        }
+    const name = document.getElementById('artistNameInput').value;
+    if(name) {
+        document.getElementById('displayArtistName').innerText = name;
+        // SALVA O NOME NO NAVEGADOR
+        localStorage.setItem('koda_artist_name', name);
+    }
+    document.getElementById('splashScreen').classList.add('hide');
+    document.body.style.overflow = 'auto';
+    fetchPacks();
+}
 
         function switchPage(page) {
             document.getElementById('homePage').classList.toggle('active', page === 'home');
@@ -633,7 +619,6 @@
 
         function addCardToSite(name, desc, link, img, cat) {
             const grid = document.getElementById('kitsGrid');
-            if(!grid) return;
             const card = document.createElement('div');
             card.className = 'kit-card';
             card.setAttribute('data-category', cat || 'samples');
@@ -648,17 +633,18 @@
             `;
             grid.prepend(card);
         }
-
         window.onload = () => {
-            const savedName = localStorage.getItem('koda_user_name');
-            if(savedName) {
-                document.getElementById('displayArtistName').innerText = savedName;
-                document.getElementById('splashScreen').classList.add('hide');
-                document.body.style.overflow = 'auto';
-                fetchPacks();
-            }
-            document.getElementById('mascotVideo').play().catch(()=>{});
-        };
+    // Tenta dar play no vídeo
+    document.getElementById('mascotVideo').play().catch(()=>{});
+
+    // VERIFICA SE JÁ EXISTE UM LOGIN SALVO
+    const savedName = localStorage.getItem('koda_artist_name');
+    if(savedName) {
+        document.getElementById('displayArtistName').innerText = savedName;
+        // Se quiser que ele entre direto sem mostrar a splash, descomente a linha abaixo:
+        enterApp(); 
+    }
+};
     </script>
 </body>
 </html>
