@@ -162,7 +162,20 @@
             border-color: white;
         }
 
-       .kit-card {
+  /* --- BLOCO ORGANIZADO PARA O KITSGRID E CARDS --- */
+
+/* 1. O PAI: Garante 2 colunas e ignora bagunça de JS */
+#kitsGrid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+    width: 100% !important;
+    padding: 10px 20px;
+    box-sizing: border-box;
+}
+
+/* 2. O CARD: Visual premium e trava de tamanho */
+.kit-card {
     background: linear-gradient(145deg, #121212 0%, #050505 100%);
     border-radius: 32px;
     padding: 16px;
@@ -170,29 +183,39 @@
     animation: fadeIn 0.5s ease backwards;
     position: relative;
     overflow: hidden;
-    
-    /* ADICIONE ESTAS 3 LINHAS ABAIXO */
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    box-sizing: border-box; /* Garante que o padding não aumente o tamanho do card */
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    box-sizing: border-box;
 }
 
-        .kit-thumb {
-            width: 100%;
-            aspect-ratio: 1/1;
-            background: #111;
-            border-radius: 24px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
-            border: 1px solid rgba(255,255,255,0.03);
-        }
+/* 3. A THUMB: Onde fica a capa do pack */
+.kit-thumb {
+    width: 100%;
+    aspect-ratio: 1/1;
+    background: #111;
+    border-radius: 24px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.03);
+}
 
-        .kit-thumb img { width: 100%; height: 100%; object-fit: cover; }
+/* 4. A IMAGEM: Ajuste para não cortar nem esticar */
+.kit-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* 5. FILTRO: Trava para esconder o card sem bugar o grid */
+.kit-card.hidden {
+    display: none !important;
+}
 
         .download-badge {
             position: absolute;
