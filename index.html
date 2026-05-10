@@ -424,7 +424,7 @@
         </section>
 
         <section class="px-8 pb-10">
-            <div id="kitsGrid" class="grid grid-cols-2 gap-4"></div>
+            <div id="kitsGrid"></div>
         </section>
     </main>
 
@@ -684,20 +684,34 @@
 function filterCategory(cat) {
     const target = cat.toLowerCase().trim();
 
+    // Botões
     document.querySelectorAll('.filter-btn').forEach(btn => {
         const btnCat = btn.getAttribute('data-cat').toLowerCase().trim();
         btn.classList.toggle('active', btnCat === target);
     });
 
-    document.querySelectorAll('.kit-card').forEach(card => {
+    const grid = document.getElementById('kitsGrid');
+    const cards = document.querySelectorAll('.kit-card');
+
+    cards.forEach(card => {
         const cardCat = (card.getAttribute('data-category') || '').toLowerCase().trim();
+        
         if (target === 'all' || cardCat === target) {
             card.classList.remove('hidden');
+            // Força o card a re-renderizar no grid
+            card.style.display = 'flex'; 
         } else {
             card.classList.add('hidden');
+            card.style.display = 'none';
         }
     });
+
+    // Pequeno truque: se o grid bugar, isso força o navegador a recalcular
+    grid.style.display = 'none';
+    grid.offsetHeight; 
+    grid.style.display = 'grid';
 }
+
 
         window.onload = () => {
     // Tenta dar play no vídeo
