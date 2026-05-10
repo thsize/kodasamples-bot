@@ -350,15 +350,23 @@
 
     <div id="splashScreen">
         <div class="overlay-content">
-            <div class="text-center mb-2">
-                <h2 class="text-4xl font-black italic tracking-tighter" style="font-family: 'Syncopate';">KODASAMPLES</h2>
-                <p class="text-[10px] text-white/50 font-bold tracking-[0.4em] mt-3 uppercase px-10">A CASA DOS PRODUTORES</p>
-            </div>
-            <div class="w-full flex flex-col items-center px-6">
-                <input type="text" id="artistNameInput" class="artist-input" placeholder="TEU NOME DE ARTISTA">
-                <button onclick="enterApp()" class="enter-btn">Iniciar Estúdio</button>
-            </div>
+    <div class="text-center mb-2">
+        <h2 class="text-4xl font-black italic tracking-tighter" style="font-family: 'Syncopate';">KODASAMPLES</h2>
+        <p class="text-[10px] text-white/50 font-bold tracking-[0.4em] mt-3 uppercase px-10">A CASA DOS PRODUTORES</p>
+
+        <div class="flex flex-col items-center gap-4 mt-6">
+            <img src="URL_DA_SUA_IMAGEM_1" class="w-16 h-auto" alt="Polaris">
+            
+            <img src="https://i.postimg.cc/L6P2m9z6/Novo-projeto-27-E3F175F.png" class="w-40 h-auto" alt="Parcerias">
         </div>
+    </div>
+
+    <div class="w-full flex flex-col items-center px-6 mt-4">
+        <input type="text" id="artistNameInput" class="artist-input" placeholder="TEU NOME DE ARTISTA">
+        <button onclick="enterApp()" class="enter-btn">Iniciar Estúdio</button>
+    </div>
+</div>
+
         <div class="video-background-container">
             <video id="mascotVideo" class="mascot-video" autoplay loop muted playsinline>
                 <source src="https://www.dropbox.com/scl/fi/aoyn4sg77baz8kw2as0ry/lv_0_20260507165613.mp4?rlkey=t0vjqnw3u6t7oprvbcyv6vg1o&st=sxv6qzc6&raw=1" type="video/mp4">
@@ -367,15 +375,16 @@
     </div>
 
     <main id="homePage" class="page-container active">
-        <header class="p-8 pb-4 flex justify-between items-end">
+                <header class="p-8 pb-4 flex justify-between items-end">
             <div>
                 <p class="text-[11px] font-black text-white/40 tracking-[0.4em] uppercase mb-1">BEM-VINDO AO</p>
                 <h2 class="text-xl font-black italic uppercase" style="font-family: 'Syncopate';">KODASAMPLES</h2>
             </div>
-            <div class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center bg-zinc-950">
-                <i class="fas fa-bolt text-white/60"></i>
+            <div class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center bg-zinc-950 overflow-hidden">
+                <img src="https://i.ibb.co/68032n2v/1778333989394.jpeg" alt="Logo Koda" class="w-full h-full object-contain p-1">
             </div>
         </header>
+
 
         <section class="mt-2 mb-0">
             <div id="highlightsContainer" class="highlights-scroll"></div>
@@ -415,7 +424,7 @@
                 </div>
                 <div>
                     <h4 class="text-[11px] font-black uppercase tracking-wider">Instagram Oficial</h4>
-                    <p class="text-[10px] text-white/50 font-bold tracking-widest">@kodasamples</p>
+                    <p class="text-[10px] text-white/50 font-bold tracking-widest">@polaris..studio</p>
                 </div>
                 <i class="fas fa-external-link-alt ml-auto text-white/20 text-xs"></i>
             </div>
