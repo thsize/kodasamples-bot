@@ -100,23 +100,25 @@ function addCardToSite(name, desc, link, img, cat) {
 
     const card = document.createElement('div');
     card.className = 'kit-card';
+    
+    // Normaliza a categoria para o filtro não falhar
     const category = (cat || 'samples').toLowerCase().trim();
     card.setAttribute('data-category', category);
 
-    const thumb = img 
-        ? `<img src="${img}" style="width:100%; height:100%; object-fit:cover;">` 
-        : `<i class="fas fa-compact-disc text-white/10 text-4xl"></i>`;
-
+    // Adicionei estilos direto aqui para garantir que o clique seja prioridade
     card.innerHTML = `
-        <div class="kit-thumb" onclick="window.open('${link}', '_blank')">
-            ${thumb}
-            <div class="download-badge"><i class="fas fa-arrow-down text-[12px]"></i></div>
+        <div class="kit-thumb" onclick="window.open('${link}', '_blank')" style="cursor: pointer; position: relative; z-index: 30;">
+            ${img ? `<img src="${img}" style="width:100%; height:100%; object-fit:cover; border-radius: 8px; pointer-events: none;">` : `<i class="fas fa-compact-disc text-white/10 text-4xl"></i>`}
+            <div class="download-badge" style="pointer-events: none; z-index: 40;">
+                <i class="fas fa-arrow-down text-[12px]"></i>
+            </div>
         </div>
-        <div style="margin-top: 8px;">
+        <div style="margin-top: 8px; position: relative; z-index: 30;">
             <h5 class="text-[10px] font-black tracking-wider uppercase truncate" style="color: white;">${name}</h5>
             <p class="text-[9px] text-blue-500 font-bold uppercase mt-1">${category}</p>
         </div>
     `;
+
     grid.prepend(card);
 }
 
