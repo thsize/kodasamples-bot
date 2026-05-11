@@ -12,7 +12,7 @@ body {
     overflow-y: auto;
 }
 
-/* --- TELA DE ENTRADA --- */
+/* --- TELA DE ENTRADA (SPLASH) --- */
 #splashScreen {
     position: fixed;
     inset: 0;
@@ -31,14 +31,27 @@ body {
     pointer-events: none;
 }
 
-/* --- GRID E CARDS (O SEGREDO DO FILTRO) --- */
+/* --- ESTRUTURA DE PÁGINAS --- */
+/* Corrigindo o bug de páginas encavaladas */
+.page-container {
+    display: none; /* Escondido por padrão */
+    width: 100%;
+    min-height: 100vh;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.page-container.active {
+    display: block !important; /* Aparece quando ativo */
+    opacity: 1;
+}
+
+/* --- GRID E CARDS --- */
 #kitsGrid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px;
     width: 100%;
-    padding: 16px;
-    box-sizing: border-box;
     position: relative;
     z-index: 10;
 }
@@ -48,11 +61,12 @@ body {
     border-radius: 24px;
     padding: 12px;
     border: 1px solid rgba(255, 255, 255, 0.05);
-    display: flex; /* Sem !important para o .hidden funcionar */
+    display: flex;
     flex-direction: column;
     transition: transform 0.2s ease;
 }
 
+/* Essencial para o filtro funcionar */
 .kit-card.hidden {
     display: none !important;
 }
@@ -65,6 +79,7 @@ body {
     position: relative;
     cursor: pointer;
     z-index: 20;
+    background: #111; /* Fundo enquanto a imagem não carrega */
 }
 
 .kit-thumb img {
@@ -72,24 +87,10 @@ body {
     height: 100%;
     object-fit: cover;
     pointer-events: none;
+    display: block;
 }
 
-.download-badge {
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
-    background: white;
-    color: black;
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 25;
-}
-
-/* --- CATEGORIAS --- */
+/* --- CATEGORIAS FIXAS --- */
 .categories-container {
     display: flex;
     overflow-x: auto;
@@ -97,36 +98,38 @@ body {
     padding: 15px 20px;
     position: sticky;
     top: 0;
-    background: black;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px); /* Efeito de vidro */
     z-index: 100;
     scrollbar-width: none;
 }
 
 .filter-btn {
     flex-shrink: 0;
-    padding: 8px 16px;
+    padding: 8px 18px;
     border-radius: 50px;
     background: rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.1);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 800;
     color: rgba(255,255,255,0.5);
     text-transform: uppercase;
+    transition: all 0.3s;
 }
 
 .filter-btn.active {
-    background: white;
-    color: black;
+    background: white !important;
+    color: black !important;
+    border-color: white;
 }
 
-/* --- RESTANTE DO LAYOUT --- */
-.page-container {
-    display: none;
-    opacity: 0;
+/* --- MODAL DE UPLOAD (Ajuste de profundidade) --- */
+#uploadModal {
+    z-index: 10000;
 }
-.page-container.active {
-    display: block;
-    opacity: 1;
+
+#uploadModal.active {
+    display: flex !important;
 }
 
 /* Ocultar scrollbars */
