@@ -7,30 +7,297 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --primary: #ffffff;
+            --bg-pure-black: #000000;
+            --zinc-950: #09090b;
+        }
+
+        body {
+            background: var(--bg-pure-black);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow-x: hidden; 
+        }
+
+        /* --- TELA DE ENTRADA --- */
+        #splashScreen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-pure-black);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 1s cubic-bezier(0.8, 0, 0.2, 1);
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #splashScreen.hide {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .video-background-container {
+            position: absolute;
+            top: 38%;
+            left: 50%;
+            transform: translate(-50%, -50%); 
+            width: 150vw; 
+            max-width: 1200px; 
+            aspect-ratio: 1/1;
+            z-index: 1; 
+            pointer-events: none;
+        }
+
+        .mascot-video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .overlay-content {
+            position: relative;
+            z-index: 10; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            text-align: center;
+            margin-top: 180px; 
+        }
+
+        .artist-input {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 16px;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+            font-weight: 700;
+            color: white;
+            outline: none;
+            transition: all 0.4s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 13px;
+            margin-top: 15px;
+        }
+
+        .enter-btn {
+            width: 100%;
+            max-width: 320px;
+            background: white;
+            color: black;
+            padding: 18px;
+            border-radius: 20px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            margin-top: 12px;
+        }
+
+        /* --- ESTRUTURA DE PÁGINAS --- */
+        .page-container {
+            display: none;
+            opacity: 0;
+            padding-bottom: 120px;
+            transition: opacity 0.5s ease;
+        }
+
+        .page-container.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .categories-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 12px;
+            padding: 10px 32px;
+            scrollbar-width: none;
+        }
+
+        .categories-container::-webkit-scrollbar { display: none; }
+
+        .filter-btn {
+            flex-shrink: 0; 
+            padding: 10px 20px;
+            border-radius: 50px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            font-size: 10px;
+            font-weight: 800;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+        }
+
+        .filter-btn.active {
+            background: white;
+            color: black;
+        }
+
+        #kitsGrid {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 12px !important;
+            padding: 0 16px !important;
+        }
+
+        .kit-card {
+            background: linear-gradient(145deg, #121212 0%, #050505 100%);
+            border-radius: 28px;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            min-width: 0; 
+        }
+
+        .kit-card.hidden { display: none !important; }
+
+        .kit-thumb {
+            width: 100%;
+            aspect-ratio: 1/1;
+            overflow: hidden;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .download-badge {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: white;
+            color: black;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .highlights-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 16px;
+            scroll-snap-type: x mandatory;
+            padding: 10px 32px 25px;
+            scrollbar-width: none;
+        }
+
+        .highlight-card {
+            min-width: 100%;
+            scroll-snap-align: center;
+            position: relative;
+            height: 180px;
+            border-radius: 35px;
+            overflow: hidden;
+            background: #0a0a0a;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        #uploadModal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        #uploadModal.active { display: flex; }
+
+        .panel-content {
+            background: #0a0a0a;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 40px 40px 0 0;
+            padding: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .panel-input, .panel-select {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 15px;
+            border-radius: 18px;
+            color: white;
+            margin-bottom: 15px;
+            outline: none;
+        }
+
+        #uploadStatus {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            color: black;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 10px;
+            font-weight: 900;
+            z-index: 3000;
+            display: none;
+        }
+
+        .nav-container {
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40px;
+            padding: 12px 24px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .nav-btn.active { color: white !important; }
+        .nav-btn { color: rgba(255,255,255,0.2); }
+
+        #copyToast {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #22c55e;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 11px;
+            z-index: 4000;
+            display: none;
+        }
+    </style>
 </head>
 <body>
 
     <div id="uploadStatus">A UPAR TUDO... <span id="progVal">0%</span></div>
-    <div id="copyToast">LINK COPIADO COM SUCESSO!</div>
+    <div id="copyToast">LINK COPIADO!</div>
 
     <div id="splashScreen">
         <div class="overlay-content">
-            <div class="text-center mb-2">
-                <h2 class="text-4xl font-black italic tracking-tighter" style="font-family: 'Syncopate';">KODASAMPLES</h2>
-                <p class="text-[10px] text-white/50 font-bold tracking-[0.4em] mt-3 uppercase px-10">A CASA DOS PRODUTORES</p>
-            </div>
+            <h2 class="text-4xl font-black italic" style="font-family: 'Syncopate';">KODASAMPLES</h2>
+            <p class="text-[10px] text-white/50 tracking-[0.4em] mt-3 uppercase px-10">A CASA DOS PRODUTORES</p>
             <div class="w-full flex flex-col items-center px-6">
                 <input type="text" id="artistNameInput" class="artist-input" placeholder="TEU NOME DE ARTISTA">
                 <button onclick="enterApp()" class="enter-btn">Iniciar Estúdio</button>
             </div>
         </div>
-
-        <div style="position: absolute; bottom: 20px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 15px; z-index: 20; pointer-events: none;">
-            <img src="https://i.ibb.co/b5YsCCss/Novo-projeto-24-34-FE056.png" class="w-24 h-auto" alt="Polaris">
-            <img src="https://i.postimg.cc/L6P2m9z6/Novo-projeto-27-E3F175F.png" style="width: 160px; height: auto;" alt="Parcerias">
-        </div>
-
         <div class="video-background-container">
             <video id="mascotVideo" class="mascot-video" autoplay loop muted playsinline>
                 <source src="https://www.dropbox.com/scl/fi/aoyn4sg77baz8kw2as0ry/lv_0_20260507165613.mp4?rlkey=t0vjqnw3u6t7oprvbcyv6vg1o&st=sxv6qzc6&raw=1" type="video/mp4">
@@ -41,33 +308,30 @@
     <main id="homePage" class="page-container active">
         <header class="p-8 pb-4 flex justify-between items-end">
             <div>
-                <p class="text-[11px] font-black text-white/40 tracking-[0.4em] uppercase mb-1">BEM-VINDO AO</p>
+                <p class="text-[11px] font-black text-white/40 tracking-[0.4em] uppercase mb-1">BEM-VINDO</p>
                 <h2 class="text-xl font-black italic uppercase" style="font-family: 'Syncopate';">KODASAMPLES</h2>
             </div>
-            <div class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center bg-zinc-950 overflow-hidden">
-                <img src="https://i.postimg.cc/m2zsPH01/Novo-projeto-23-456C32D.png" class="w-full h-full object-cover" alt="Logo">
+            <div class="w-12 h-12 rounded-full border border-white/10 bg-zinc-950 overflow-hidden">
+                <img src="https://i.postimg.cc/m2zsPH01/Novo-projeto-23-456C32D.png" class="w-full h-full object-cover">
             </div>
         </header>
 
-        <section class="mt-2 mb-2">
-            <div id="highlightsContainer" class="highlights-scroll"></div>
-        </section>
+        <section id="highlightsContainer" class="highlights-scroll"></section>
 
         <section class="categories-container no-scrollbar">
-            <button onclick="filterCategory('all')" class="filter-btn active">Todos</button>
-            <button onclick="filterCategory('samples')" class="filter-btn">Samples</button>
-            <button onclick="filterCategory('melodias')" class="filter-btn">Melodias</button>
-            <button onclick="filterCategory('drumkits')" class="filter-btn">Drumkits</button>
-            <button onclick="filterCategory('acapella')" class="filter-btn">Acapellas</button>
+            <button onclick="filterCategory('all')" class="filter-btn active" data-cat="all">Todos</button>
+            <button onclick="filterCategory('samples')" class="filter-btn" data-cat="samples">Samples</button>
+            <button onclick="filterCategory('melodias')" class="filter-btn" data-cat="melodias">Melodias</button>
+            <button onclick="filterCategory('drumkit')" class="filter-btn" data-cat="drumkit">Drumkits</button>
         </section>
 
-        <section class="px-8 pb-10">
+        <section class="px-4 pb-10">
             <div id="kitsGrid"></div>
         </section>
     </main>
 
     <main id="profilePage" class="page-container">
-        <section class="profile-hero text-center pt-10">
+        <section class="text-center pt-10">
             <div class="relative w-32 h-32 mx-auto mb-6">
                 <div class="w-full h-full rounded-full bg-zinc-900 border-4 border-white/5 flex items-center justify-center overflow-hidden">
                     <i class="fas fa-user text-4xl text-white/10"></i>
@@ -103,53 +367,150 @@
                 <i class="fas fa-copy ml-auto text-white/20 text-xs"></i>
             </div>
 
-            <button onclick="location.reload()" class="w-full bg-red-500/10 text-red-500 py-5 rounded-[24px] font-black text-[10px] uppercase tracking-[0.2em] border border-red-500/20 active:scale-95 transition-all mt-8">
+            <button onclick="localStorage.clear(); location.reload();" class="w-full bg-red-500/10 text-red-500 py-5 rounded-[24px] font-black text-[10px] uppercase tracking-[0.2em] border border-red-500/20 active:scale-95 transition-all mt-8">
                 Sair do Estúdio
             </button>
         </section>
     </main>
 
-    <div id="uploadModal" class="hidden" onclick="closeUploadModal()">
-        <div class="panel-content" onclick="event.stopPropagation()">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-black italic" style="font-family: 'Syncopate';">UPAR PACK</h3>
-                <button onclick="closeUploadModal()" class="text-white/30"><i class="fas fa-times text-xl"></i></button>
-            </div>
+    <div id="uploadModal">
+        <div class="panel-content">
+            <h3 class="text-lg font-black italic mb-6" style="font-family: 'Syncopate';">UPAR PACK</h3>
             <input type="text" id="upName" class="panel-input" placeholder="NOME DO PACK">
-            
             <select id="upCategory" class="panel-select">
-                <option value="samples" selected>SAMPLES (DRUMS/FX)</option>
-                <option value="melodias">MELODIAS/LOOPS</option>
-                <option value="drumkits">DRUMKITS</option> 
-                <option value="acapella">ACAPELLA</option>
+                <option value="samples">SAMPLES</option>
+                <option value="melodias">MELODIAS</option>
+                <option value="drumkit">DRUMKIT</option>
             </select>
-
-            <input type="text" id="upDesc" class="panel-input" placeholder="DESCRIÇÃO (EX: PREMIUM PACK)">
             <input type="text" id="upLink" class="panel-input" placeholder="LINK DE DOWNLOAD">
-            
-            <div class="upload-btn-box">
-                <div class="select-btn" onclick="document.getElementById('imgInput').click()">
-                    <img id="pImg" class="preview-img">
-                    <i class="fas fa-camera" id="camIcon"></i> CAPA
-                    <input type="file" id="imgInput" class="hidden" accept="image/*" onchange="previewImage(this)">
-                </div>
-            </div>
-            <button onclick="startUpload()" class="w-full bg-white text-black py-5 rounded-2xl font-black text-xs uppercase tracking-widest active:scale-95 transition-transform">
-                Publicar no Site
-            </button>
+            <input type="file" id="imgInput" class="hidden" accept="image/*">
+            <button onclick="document.getElementById('imgInput').click()" class="w-full bg-zinc-900 py-4 rounded-xl mb-4 text-xs font-bold">SELECIONAR CAPA</button>
+            <button onclick="startUpload()" class="w-full bg-white text-black py-5 rounded-2xl font-black uppercase text-xs">Publicar</button>
+            <button onclick="document.getElementById('uploadModal').classList.remove('active')" class="w-full text-white/20 mt-4 text-[10px] font-bold">CANCELAR</button>
         </div>
     </div>
 
     <nav class="fixed bottom-8 left-0 right-0 flex justify-center px-6 z-50">
         <div class="nav-container flex items-center justify-between">
-            <button onclick="switchPage('home')" id="navHome" class="nav-btn active w-12 h-12 flex items-center justify-center text-xl"><i class="fas fa-home"></i></button>
-            <button onclick="openUploadModal()" class="w-14 h-14 bg-white text-black rounded-full flex items-center justify-center text-xl shadow-2xl active:scale-90 transition-transform">
+            <button onclick="switchPage('home')" id="navHome" class="nav-btn active text-xl w-12 h-12 flex items-center justify-center"><i class="fas fa-home"></i></button>
+            <button onclick="document.getElementById('uploadModal').classList.add('active')" class="w-14 h-14 bg-white text-black rounded-full flex items-center justify-center text-xl shadow-2xl active:scale-90 transition-transform">
                 <i class="fas fa-plus"></i>
             </button>
-            <button onclick="switchPage('profile')" id="navProfile" class="nav-btn w-12 h-12 flex items-center justify-center text-xl"><i class="fas fa-user"></i></button>
+            <button onclick="switchPage('profile')" id="navProfile" class="nav-btn text-xl w-12 h-12 flex items-center justify-center"><i class="fas fa-user"></i></button>
         </div>
     </nav>
 
-    <script src="script.js"></script>
+    <script>
+        const API_URL = "https://kodasamples-bot-1.onrender.com";
+
+        async function fetchPacks() {
+            try {
+                const res = await fetch(`${API_URL}/packs?t=` + Date.now());
+                const packs = await res.json();
+                const grid = document.getElementById('kitsGrid');
+                const high = document.getElementById('highlightsContainer');
+                
+                grid.innerHTML = '';
+                high.innerHTML = '';
+
+                packs.reverse().forEach((p, index) => {
+                    if(index < 5) addHighlight(p.title, p.link, p.image);
+                    addCardToSite(p.title, p.description, p.link, p.image, p.category);
+                });
+            } catch (e) { console.log("Erro ao carregar"); }
+        }
+
+        function addCardToSite(name, desc, link, img, cat) {
+            const grid = document.getElementById('kitsGrid');
+            const card = document.createElement('div');
+            card.className = 'kit-card';
+            card.setAttribute('data-category', (cat || 'samples').toLowerCase());
+            card.innerHTML = `
+                <div class="kit-thumb" onclick="window.open('${link}', '_blank')">
+                    <img src="${img || ''}" class="w-full h-full object-cover">
+                    <div class="download-badge"><i class="fas fa-arrow-down"></i></div>
+                </div>
+                <div class="mt-2 px-1">
+                    <h5 class="text-[9px] font-black uppercase truncate">${name}</h5>
+                    <p class="text-[8px] text-blue-500 font-bold uppercase mt-0.5">${cat || 'samples'}</p>
+                </div>
+            `;
+            grid.appendChild(card);
+        }
+
+        function addHighlight(name, link, img) {
+            const high = document.getElementById('highlightsContainer');
+            const card = document.createElement('div');
+            card.className = 'highlight-card';
+            card.onclick = () => window.open(link, '_blank');
+            card.innerHTML = `
+                <div style="background: url(${img}); background-size: cover; background-position: center; width: 100%; height: 100%; opacity: 0.4; position: absolute;"></div>
+                <div class="relative z-10 p-6 h-full flex flex-col justify-end">
+                    <span class="text-[8px] font-black bg-white text-black px-2 py-1 rounded w-fit mb-2">DESTAQUE</span>
+                    <h3 class="text-xl font-black italic uppercase leading-none" style="font-family: 'Syncopate';">${name}</h3>
+                </div>
+            `;
+            high.appendChild(card);
+        }
+
+        async function startUpload() {
+            const fd = new FormData();
+            fd.append('description', document.getElementById('upName').value);
+            fd.append('link', document.getElementById('upLink').value);
+            fd.append('category', document.getElementById('upCategory').value);
+            const file = document.getElementById('imgInput').files[0];
+            if(file) fd.append('photo', file);
+
+            document.getElementById('uploadStatus').style.display = 'block';
+            document.getElementById('uploadModal').classList.remove('active');
+
+            try {
+                await fetch(`${API_URL}/upload`, { method: 'POST', body: fd });
+                fetchPacks();
+                document.getElementById('uploadStatus').style.display = 'none';
+            } catch (e) { alert("Erro no upload"); }
+        }
+
+        function shareSite() {
+            const siteUrl = window.location.href;
+            navigator.clipboard.writeText("🔥 Visite o KodaSamples: " + siteUrl).then(() => {
+                const toast = document.getElementById('copyToast');
+                toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none'; }, 2000);
+            });
+        }
+
+        function enterApp() {
+            const name = document.getElementById('artistNameInput').value;
+            if(name) {
+                document.getElementById('displayArtistName').innerText = name;
+                localStorage.setItem('koda_artist_name', name);
+            }
+            document.getElementById('splashScreen').classList.add('hide');
+            fetchPacks();
+        }
+
+        function filterCategory(cat) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-cat') === cat));
+            document.querySelectorAll('.kit-card').forEach(card => {
+                card.classList.toggle('hidden', cat !== 'all' && card.getAttribute('data-category') !== cat);
+            });
+        }
+
+        function switchPage(p) {
+            document.getElementById('homePage').classList.toggle('active', p === 'home');
+            document.getElementById('profilePage').classList.toggle('active', p === 'profile');
+            document.getElementById('navHome').classList.toggle('active', p === 'home');
+            document.getElementById('navProfile').classList.toggle('active', p === 'profile');
+        }
+
+        window.onload = () => {
+            const saved = localStorage.getItem('koda_artist_name');
+            if(saved) {
+                document.getElementById('displayArtistName').innerText = saved;
+                enterApp();
+            }
+        };
+    </script>
 </body>
 </html>
