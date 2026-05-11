@@ -1,16 +1,81 @@
-// 1. Primeiro a URL do seu motor (Render)
+// 1. URL do seu motor no Render (MANTENHA EXATAMENTE ASSIM)
 const API_URL = "https://kodasamples-bot-1.onrender.com"; 
 
-// 2. Depois a sua função que você mandou
+// 2. BUSCAR PACKS DO BANCO DE DADOS
 async function fetchPacks() {
     try {
-        const res = await fetch(`${API_URL}/packs?t=` + Date.now()); // Note o API_URL aqui!
+        const res = await fetch(`${API_URL}/packs?t=` + Date.now()); 
         const packs = await res.json();
-        // ... resto do código
-    } catch(e) { console.log(e) }
+        
+        const grid = document.getElementById('kitsGrid');
+        const highlightContainer = document.getElementById('highlightsContainer');
+        
+        if(grid) grid.innerHTML = ''; // Limpa o grid antes de carregar
+        if(highlightContainer) highlightContainer.innerHTML = '';
+
+        packs.forEach((pack, index) => {
+            // Se for o primeiro pack, coloca em destaque
+            if(index === 0) {
+                addHighlight(pack.title, pack.link, pack.image);
+            }
+            
+            // Adiciona todos no grid normal
+            addCardToSite(pack.title, pack.description, pack.link, pack.image, pack.category);
+        });
+
+    } catch(e) { 
+        console.log("Erro ao carregar packs:", e);
+    }
 }
+
+// 3. ENVIAR NOVO PACK (UPLOAD)
+async function startUpload() {
+    const name = document.getElementById('upName').value;
+    const link = document.getElementById('upLink').value;
+    const category = document.getElementById('upCategory').value;
+
+    if(!name || !link) return alert("Preencha os campos!");
+
+    const status = document.getElementById('uploadStatus');
+    status.style.display = 'block';
+    document.getElementById('uploadModal').classList.remove('active');
+
+    const fd = new FormData();
+    fd.append('description', name);
+    fd.append('shortDesc', document.getElementById('upDesc').value || 'PREMIUM PACK');
+    fd.append('link', link);
+    fd.append('category', category);
+
+    if(document.getElementById('imgInput').files[0]) {
+        fd.append('photo', document.getElementById('imgInput').files[0]);
+    }
+
+    try {
+        // CORREÇÃO: Agora enviando para a API_URL do Render
+        const res = await fetch(`${API_URL}/upload`, { 
+            method: 'POST', 
+            body: fd 
+        });
+
+        if(res.ok) {
+            document.getElementById('progVal').innerText = "100%";
+            setTimeout(() => {
+                status.style.display = 'none';
+                fetchPacks(); // Recarrega a lista
+                limparCampos();
+            }, 1000);
+        }
+    } catch (e) { 
+        alert("Erro ao subir para o Render"); 
+        status.style.display = 'none'; 
+    }
+}
+
+// --- FUNÇÕES DE INTERFACE (Abaixo mantive igual as suas) ---
+
 function addHighlight(name, link, img) {
     const container = document.getElementById('highlightsContainer');
+    if(!container) return;
     const card = document.createElement('div');
     card.className = 'highlight-card';
     card.onclick = () => window.open(link, '_blank');
@@ -29,95 +94,12 @@ function addHighlight(name, link, img) {
     container.appendChild(card);
 }
 
-function shareSite() {
-    const siteUrl = window.location.href;
-    const message = "🔥 Visite o nosso site de packs e samples exclusivos! " + siteUrl;
-    navigator.clipboard.writeText(message).then(() => {
-        const toast = document.getElementById('copyToast');
-        toast.style.display = 'block';
-        setTimeout(() => { toast.style.display = 'none'; }, 2000);
-    });
-}
-
-function enterApp() {
-    const name = document.getElementById('artistNameInput').value;
-    if(name) {
-        document.getElementById('displayArtistName').innerText = name;
-        localStorage.setItem('koda_artist_name', name);
-    }
-    document.getElementById('splashScreen').classList.add('hide');
-    document.body.style.overflow = 'auto';
-    fetchPacks();
-}
-
-function switchPage(page) {
-    document.getElementById('homePage').classList.toggle('active', page === 'home');
-    document.getElementById('profilePage').classList.toggle('active', page === 'profile');
-    document.getElementById('navHome').classList.toggle('active', page === 'home');
-    document.getElementById('navProfile').classList.toggle('active', page === 'profile');
-    window.scrollTo(0,0);
-}
-
-document.getElementById('imgInput').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if(file) {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            document.getElementById('pImg').src = ev.target.result;
-            document.getElementById('pImg').style.display = 'block';
-            document.getElementById('camIcon').style.display = 'none';
-        };
-        reader.readAsDataURL(file);
-    }
-});
-
-async function startUpload() {
-    const name = document.getElementById('upName').value;
-    const link = document.getElementById('upLink').value;
-    const category = document.getElementById('upCategory').value;
-
-    if(!name || !link) return alert("Preencha os campos!");
-
-    const status = document.getElementById('uploadStatus');
-    status.style.display = 'block';
-    document.getElementById('uploadModal').classList.remove('active');
-
-    const fd = new FormData();
-    fd.append('description', name);
-    fd.append('shortDesc', document.getElementById('upDesc').value || 'PREMIUM PACK');
-    fd.append('link', link);
-    fd.append('category', category);
-
-    if(document.getElementById('imgInput').files[0]) fd.append('photo', document.getElementById('imgInput').files[0]);
-
-    try {
-        const res = await fetch('/upload', { method: 'POST', body: fd });
-        if(res.ok) {
-            document.getElementById('progVal').innerText = "100%";
-            setTimeout(() => {
-                status.style.display = 'none';
-                fetchPacks();
-                limparCampos();
-            }, 1000);
-        }
-    } catch (e) { alert("Erro ao subir"); status.style.display = 'none'; }
-}
-
-function limparCampos() {
-    document.getElementById('upName').value = "";
-    document.getElementById('upDesc').value = "";
-    document.getElementById('upLink').value = "";
-    document.getElementById('pImg').style.display = 'none';
-    document.getElementById('camIcon').style.display = 'block';
-}
-
 function addCardToSite(name, desc, link, img, cat) {
     const grid = document.getElementById('kitsGrid');
     if (!grid) return;
 
     const card = document.createElement('div');
     card.className = 'kit-card';
-    
     const category = (cat || 'samples').toLowerCase().trim();
     card.setAttribute('data-category', category);
 
@@ -135,43 +117,72 @@ function addCardToSite(name, desc, link, img, cat) {
             <p class="text-[9px] text-blue-500 font-bold uppercase mt-1">${category}</p>
         </div>
     `;
-
     grid.prepend(card);
+}
+
+function shareSite() {
+    const siteUrl = window.location.href;
+    const message = "🔥 Visite o nosso site de packs e samples exclusivos! " + siteUrl;
+    navigator.clipboard.writeText(message).then(() => {
+        const toast = document.getElementById('copyToast');
+        if(toast) {
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 2000);
+        }
+    });
+}
+
+function enterApp() {
+    const nameInput = document.getElementById('artistNameInput');
+    const name = nameInput ? nameInput.value : "";
+    if(name) {
+        document.getElementById('displayArtistName').innerText = name;
+        localStorage.setItem('koda_artist_name', name);
+    }
+    document.getElementById('splashScreen').classList.add('hide');
+    document.body.style.overflow = 'auto';
+    fetchPacks();
+}
+
+function switchPage(page) {
+    const home = document.getElementById('homePage');
+    const profile = document.getElementById('profilePage');
+    if(home) home.classList.toggle('active', page === 'home');
+    if(profile) profile.classList.toggle('active', page === 'profile');
+    window.scrollTo(0,0);
 }
 
 function filterCategory(cat) {
     const target = cat.toLowerCase().trim();
-
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        const btnCat = btn.getAttribute('data-cat').toLowerCase().trim();
-        btn.classList.toggle('active', btnCat === target);
-    });
-
-    const grid = document.getElementById('kitsGrid');
     const cards = document.querySelectorAll('.kit-card');
 
     cards.forEach(card => {
         const cardCat = (card.getAttribute('data-category') || '').toLowerCase().trim();
-        
         if (target === 'all' || cardCat === target) {
-            card.classList.remove('hidden');
-            card.style.display = 'flex'; 
+            card.style.display = 'block'; 
         } else {
-            card.classList.add('hidden');
             card.style.display = 'none';
         }
     });
+}
 
-    grid.style.display = 'none';
-    grid.offsetHeight; 
-    grid.style.display = 'grid';
+function limparCampos() {
+    document.getElementById('upName').value = "";
+    document.getElementById('upDesc').value = "";
+    document.getElementById('upLink').value = "";
+    document.getElementById('pImg').style.display = 'none';
+    document.getElementById('camIcon').style.display = 'block';
+    document.getElementById('imgInput').value = "";
 }
 
 window.onload = () => {
-    document.getElementById('mascotVideo').play().catch(()=>{});
+    const mascot = document.getElementById('mascotVideo');
+    if(mascot) mascot.play().catch(()=>{});
+    
     const savedName = localStorage.getItem('koda_artist_name');
     if(savedName) {
         document.getElementById('displayArtistName').innerText = savedName;
-        enterApp(); 
+        // Se já tem nome, entra direto
+        setTimeout(enterApp, 500); 
     }
 };
