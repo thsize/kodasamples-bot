@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -27,7 +26,7 @@
             </div>
         </div>
 
-        <div style="position: absolute; bottom: -49px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 15px; z-index: 20; pointer-events: none;">
+        <div style="position: absolute; bottom: 20px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 15px; z-index: 20; pointer-events: none;">
             <img src="https://i.ibb.co/b5YsCCss/Novo-projeto-24-34-FE056.png" class="w-24 h-auto" alt="Polaris">
             <img src="https://i.postimg.cc/L6P2m9z6/Novo-projeto-27-E3F175F.png" style="width: 160px; height: auto;" alt="Parcerias">
         </div>
@@ -55,11 +54,11 @@
         </section>
 
         <section class="categories-container no-scrollbar">
-            <button onclick="filterCategory('all')" class="filter-btn active" data-cat="all">Todos</button>
-            <button onclick="filterCategory('samples')" class="filter-btn" data-cat="samples">Samples</button>
-            <button onclick="filterCategory('melodias')" class="filter-btn" data-cat="melodias">Melodias</button>
-            <button onclick="filterCategory('drumkit')" class="filter-btn" data-cat="drumkit">Drumkits</button>
-            <button onclick="filterCategory('acapella')" class="filter-btn" data-cat="acapella">Acapellas</button>
+            <button onclick="filterCategory('all')" class="filter-btn active">Todos</button>
+            <button onclick="filterCategory('samples')" class="filter-btn">Samples</button>
+            <button onclick="filterCategory('melodias')" class="filter-btn">Melodias</button>
+            <button onclick="filterCategory('drumkits')" class="filter-btn">Drumkits</button>
+            <button onclick="filterCategory('acapella')" class="filter-btn">Acapellas</button>
         </section>
 
         <section class="px-8 pb-10">
@@ -110,19 +109,18 @@
         </section>
     </main>
 
-    <div id="uploadModal" onclick="this.classList.remove('active')">
+    <div id="uploadModal" class="hidden" onclick="this.classList.remove('active'); this.style.display='none'">
         <div class="panel-content" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-lg font-black italic" style="font-family: 'Syncopate';">UPAR PACK</h3>
-                <button onclick="document.getElementById('uploadModal').classList.remove('active')" class="text-white/30"><i class="fas fa-times text-xl"></i></button>
+                <button onclick="document.getElementById('uploadModal').classList.remove('active'); document.getElementById('uploadModal').style.display='none'" class="text-white/30"><i class="fas fa-times text-xl"></i></button>
             </div>
             <input type="text" id="upName" class="panel-input" placeholder="NOME DO PACK">
             
             <select id="upCategory" class="panel-select">
                 <option value="samples" selected>SAMPLES (DRUMS/FX)</option>
                 <option value="melodias">MELODIAS/LOOPS</option>
-                <option value="drumkit">DRUMKIT</option>
-                <option value="acapella">ACAPELLA</option>
+                <option value="drumkits">DRUMKITS</option> <option value="acapella">ACAPELLA</option>
             </select>
 
             <input type="text" id="upDesc" class="panel-input" placeholder="DESCRIÇÃO (EX: PREMIUM PACK)">
@@ -132,7 +130,7 @@
                 <div class="select-btn" onclick="document.getElementById('imgInput').click()">
                     <img id="pImg" class="preview-img">
                     <i class="fas fa-camera" id="camIcon"></i> CAPA
-                    <input type="file" id="imgInput" class="hidden" accept="image/*">
+                    <input type="file" id="imgInput" class="hidden" accept="image/*" onchange="const fr = new FileReader(); fr.onload = (e) => { document.getElementById('pImg').src = e.target.result; document.getElementById('pImg').style.display='block'; document.getElementById('camIcon').style.display='none'; }; fr.readAsDataURL(this.files[0])">
                 </div>
             </div>
             <button onclick="startUpload()" class="w-full bg-white text-black py-5 rounded-2xl font-black text-xs uppercase tracking-widest active:scale-95 transition-transform">
@@ -144,14 +142,12 @@
     <nav class="fixed bottom-8 left-0 right-0 flex justify-center px-6 z-50">
         <div class="nav-container flex items-center justify-between">
             <button onclick="switchPage('home')" id="navHome" class="nav-btn active w-12 h-12 flex items-center justify-center text-xl"><i class="fas fa-home"></i></button>
-            <button onclick="document.getElementById('uploadModal').classList.add('active')" class="w-14 h-14 bg-white text-black rounded-full flex items-center justify-center text-xl shadow-2xl active:scale-90 transition-transform">
+            <button onclick="document.getElementById('uploadModal').classList.add('active'); document.getElementById('uploadModal').style.display='flex'" class="w-14 h-14 bg-white text-black rounded-full flex items-center justify-center text-xl shadow-2xl active:scale-90 transition-transform">
                 <i class="fas fa-plus"></i>
             </button>
             <button onclick="switchPage('profile')" id="navProfile" class="nav-btn w-12 h-12 flex items-center justify-center text-xl"><i class="fas fa-user"></i></button>
         </div>
     </nav>
-
-  <link rel="stylesheet" href="style.css">
 
     <script src="script.js"></script>
 </body>
