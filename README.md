@@ -8,4 +8,4 @@ A Casa dos Produtores. Plataforma para distribuição de samples, melodias e dru
 - Database: MongoDB
 
 ## 🎧 Desenvolvido por
-[Teu Nome/DJ THSIZE]
+[DJ THSIZE]
