@@ -1,7 +1,6 @@
 :root {
     --primary: #ffffff;
     --bg-pure-black: #000000;
-    --zinc-950: #09090b;
 }
 
 body {
@@ -9,7 +8,8 @@ body {
     color: white;
     font-family: 'Inter', sans-serif;
     margin: 0;
-    overflow: hidden; 
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 /* --- TELA DE ENTRADA --- */
@@ -17,14 +17,12 @@ body {
     position: fixed;
     inset: 0;
     background: var(--bg-pure-black);
-    z-index: 999;
+    z-index: 9999;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     transition: all 1s cubic-bezier(0.8, 0, 0.2, 1);
-    overflow: hidden;
-    touch-action: none;
 }
 
 #splashScreen.hide {
@@ -33,145 +31,26 @@ body {
     pointer-events: none;
 }
 
-.video-background-container {
-    position: absolute;
-    top: 38%;
-    left: 50%;
-    transform: translate(-50%, -50%); 
-    width: 150vw; 
-    max-width: 1200px; 
-    aspect-ratio: 1/1;
-    z-index: 1; 
-    pointer-events: none;
-}
-
-.mascot-video {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-.overlay-content {
-    position: relative;
-    z-index: 10; 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    text-align: center;
-    margin-top: 180px; 
-}
-
-.artist-input {
-    background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 20px;
-    padding: 16px;
-    width: 100%;
-    max-width: 320px;
-    text-align: center;
-    font-weight: 700;
-    color: white;
-    outline: none;
-    transition: all 0.4s;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 13px;
-    margin-top: 15px;
-}
-
-.enter-btn {
-    width: 100%;
-    max-width: 320px;
-    background: white;
-    color: black;
-    padding: 18px;
-    border-radius: 20px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 11px;
-    cursor: pointer;
-    transition: all 0.3s;
-    border: none;
-    margin-top: 12px;
-}
-
-/* --- ESTRUTURA DE PÁGINAS --- */
-.page-container {
-    position: fixed;
-    inset: 0;
-    padding-bottom: 120px;
-    overflow-y: auto;
-    display: none;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-}
-
-.page-container.active {
-    display: flex;
-    flex-direction: column;
-    opacity: 1;
-}
-
-.categories-container {
-    display: flex !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important; 
-    gap: 12px;
-    padding: 10px 32px;
-    margin-top: 10px; 
-    margin-bottom: 10px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    touch-action: pan-x; 
-    position: relative;
-    z-index: 50;
-}
-
-.categories-container::-webkit-scrollbar { display: none; }
-
-.filter-btn {
-    flex-shrink: 0; 
-    padding: 10px 20px;
-    border-radius: 50px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    font-size: 10px;
-    font-weight: 800;
-    text-transform: uppercase;
-    white-space: nowrap;
-    transition: all 0.3s;
-    color: rgba(255,255,255,0.4);
-    letter-spacing: 1px;
-}
-.filter-btn.active {
-    background: white;
-    color: black;
-    border-color: white;
-}
-
+/* --- GRID E CARDS (O SEGREDO DO FILTRO) --- */
 #kitsGrid {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
-    width: 100% !important;
-    padding: 0 16px !important;
-    box-sizing: border-box !important;
-    align-items: start !important;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 10;
 }
 
 .kit-card {
     background: linear-gradient(145deg, #121212 0%, #050505 100%);
-    border-radius: 28px;
+    border-radius: 24px;
     padding: 12px;
     border: 1px solid rgba(255, 255, 255, 0.05);
-    display: flex !important;
-    flex-direction: column !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    min-width: 0; 
+    display: flex; /* Sem !important para o .hidden funcionar */
+    flex-direction: column;
+    transition: transform 0.2s ease;
 }
 
 .kit-card.hidden {
@@ -179,167 +58,76 @@ body {
 }
 
 .kit-thumb {
-    width: 100% !important;
-    aspect-ratio: 1/1 !important;
+    width: 100%;
+    aspect-ratio: 1/1;
     overflow: hidden;
-    border-radius: 20px;
+    border-radius: 18px;
+    position: relative;
+    cursor: pointer;
+    z-index: 20;
 }
 
 .kit-thumb img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    pointer-events: none;
 }
 
 .download-badge {
     position: absolute;
-    bottom: 10px;
-    right: 10px;
+    bottom: 8px;
+    right: 8px;
     background: white;
     color: black;
-    width: 32px;
-    height: 32px;
-    border-radius: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    z-index: 25;
 }
 
-.highlights-scroll {
+/* --- CATEGORIAS --- */
+.categories-container {
     display: flex;
     overflow-x: auto;
-    gap: 16px;
-    scroll-snap-type: x mandatory;
-    padding: 10px 32px 25px;
-    -ms-overflow-style: none;
+    gap: 10px;
+    padding: 15px 20px;
+    position: sticky;
+    top: 0;
+    background: black;
+    z-index: 100;
     scrollbar-width: none;
 }
-.highlights-scroll::-webkit-scrollbar { display: none; }
 
-.highlight-card {
-    min-width: 100%;
-    scroll-snap-align: center;
-    position: relative;
-    height: 180px;
-    border-radius: 35px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.1);
+.filter-btn {
     flex-shrink: 0;
-    background: #0a0a0a;
-}
-
-#uploadModal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.9);
-    backdrop-filter: blur(20px);
-    z-index: 2000;
-    display: none;
-    justify-content: center;
-    align-items: flex-end;
-}
-
-#uploadModal.active { display: flex; }
-
-.panel-content {
-    background: #0a0a0a;
-    width: 100%;
-    max-width: 500px;
-    border-radius: 40px 40px 0 0;
-    padding: 30px;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    animation: panelSlideUp 0.4s cubic-bezier(0.2, 1, 0.3, 1);
-}
-
-@keyframes panelSlideUp {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
-}
-
-.panel-input, .panel-select {
-    width: 100%;
+    padding: 8px 16px;
+    border-radius: 50px;
     background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 18px;
-    padding: 15px;
-    color: white;
-    font-size: 13px;
-    margin-bottom: 15px;
-    outline: none;
-}
-
-.panel-select { appearance: none; }
-
-.upload-btn-box {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.select-btn {
-    flex: 1;
-    background: rgba(255,255,255,0.03);
-    border: 1px dashed rgba(255,255,255,0.2);
-    border-radius: 18px;
-    padding: 20px;
-    text-align: center;
+    border: 1px solid rgba(255,255,255,0.1);
     font-size: 10px;
     font-weight: 800;
-    color: rgba(255,255,255,0.6);
-    cursor: pointer;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
 }
 
-.preview-img {
-    width: 50px;
-    height: 50px;
-    border-radius: 8px;
-    object-fit: cover;
-    margin: 0 auto 5px;
-    display: none;
-}
-
-.nav-container {
-    background: rgba(10, 10, 10, 0.85);
-    backdrop-filter: blur(30px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 40px;
-    padding: 12px 24px;
-    width: 90%;
-    max-width: 400px;
-}
-
-.nav-btn.active { color: white !important; }
-.nav-btn { color: rgba(255,255,255,0.2); transition: all 0.3s; }
-
-#uploadStatus {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+.filter-btn.active {
     background: white;
     color: black;
-    padding: 12px 24px;
-    border-radius: 50px;
-    font-size: 10px;
-    font-weight: 900;
-    z-index: 3000;
-    display: none;
 }
 
-#copyToast {
-    position: fixed;
-    top: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #22c55e;
-    color: white;
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-weight: 800;
-    font-size: 11px;
-    z-index: 4000;
+/* --- RESTANTE DO LAYOUT --- */
+.page-container {
     display: none;
+    opacity: 0;
+}
+.page-container.active {
+    display: block;
+    opacity: 1;
 }
 
-::-webkit-scrollbar { width: 0px; }
+/* Ocultar scrollbars */
+::-webkit-scrollbar { width: 0px; height: 0px; }
